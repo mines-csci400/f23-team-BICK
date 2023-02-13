@@ -11,6 +11,8 @@ let str_bool x =
 let str_float x =
   Printf.sprintf "%f" x
 
+let str_str (x:string) : string = x
+
 let rec str_pair (f : 'a -> string) (g : 'b -> string) ((a,b) : ('a * 'b)) : string =
   "(" ^ (f a) ^ "," ^ (g b) ^ ")"
 
