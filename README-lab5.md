@@ -58,9 +58,10 @@ a list of the tokens or the abstract syntax.
 References
 ==========
 
-- Lexing:
-  - Lecture 09: Syntax
-  - Lecture 10: Lexing
+- Lexing and Parsing:
+  - Lecture 10: Syntax
+  - Lecture 11: Lexing
+  - Lecture 12: Parsing
   - ocamllex and ocamlyacc [manual](https://ocaml.org/manual/lexyacc.html)
 - JavaScript:
   - [JavaScript Standard](https://262.ecma-international.org/10.0/)
