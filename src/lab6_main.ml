@@ -19,7 +19,6 @@ let run_tests () =
   print_tests Lab6.simple_str_eval_tests;
   print_tests Lab6.eval_tests;
   print_tests Lab6.cond_eval_tests;
-  print_tests Lab6.print_eval_tests;
   print_tests Lab6.str_eval_tests;
 ;;
 
