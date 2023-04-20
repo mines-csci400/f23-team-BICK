@@ -39,7 +39,7 @@ of an existing JavaScript interpreter such as `nodejs` (installed as
 
 - **program** *p* ::= *e* | `const` *x* `=` *e* `;` *p*
 
-- **block** *bl* ::= `return` *e* | `const` *x* `=` *e* `;` *bl*
+- **block** *bl* ::= `return` *e* `;` | `const` *x* `=` *e* `;` *bl*
 
 - **expression** *e* ::= *x* | *v* | *uop* *e* | *e* *bop* *e*
                 | *e* `?` *e* `:` *e* | `console.log` `(` *e* `)` | *e* `(` *e* `)`
@@ -77,14 +77,14 @@ Task 2
 
 Add support for function definitions. Evaluating a program such as
 ```
-const f = function(x){ return x+1 };
+const f = function(x){ return x+1; };
 console.log("Function: "+f)
 ```
 should evaluate the program, and pretty-print the function.
 
 We also need to capture information about the environment in which the
 function was defined.  Evaluating a program such as `const x = 123;
-function(y){ return x+y }` should produce a `ClosureVal` in which the
+function(y){ return x+y; }` should produce a `ClosureVal` in which the
 map contains a single binding for the variable `x`, which is the only
 variable present in the function's define-time environment.
 
@@ -105,8 +105,8 @@ should result in the value `6`.
 Ensure your function calls use lexical scope. For example, evaluating the following:
 ```
 const x = 5;
-const f = function(y){ return x + y };
-(function(z) { const x = 7; return f(6) })(0)
+const f = function(y){ return x + y; };
+(function(z) { const x = 7; return f(6); })(0)
 ```
 should result in the value `11`.
 
