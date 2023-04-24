@@ -114,7 +114,7 @@ endef
 
 $(eval $(call EVAL_TEMPLATE,6))
 $(eval $(call EVAL_TEMPLATE,7))
-# $(eval $(call EVAL_TEMPLATE,8,javascript_heap.$(CMO)))
+$(eval $(call EVAL_TEMPLATE,8,javascript_heap.$(CMO)))
 
 
 # $(eval $(call EVAL_TEMPLATE,9))
