@@ -51,19 +51,20 @@ Repository Setup
 
 4. Give all team members access to the team repo in the course github
    organization. Give the team "TAs\_f23" (i.e., the github team that includes
-   TAs and instructors) access to the team repo.
+   TAs and instructors) access to the team repo. IMPORTANT: Don't make any changes
+   to your repo before completing steps 5 and 6.
 
-5. Add all team members' names and CWIDs to the `AUTHORS` file.
-
-6. Change the "origin" remote for your cloned repo to your newly
+5. Change the "origin" remote for your cloned repo to your newly
    created team repo and push.
-   
+
        git remote set-url origin git@github.com:mines-csci400/TEAM-REPO
        git push origin master
 
-7. Add a new "upstream" remote for the starter code repo.
+6. Add a new "upstream" remote for the starter code repo.
 
        git remote add upstream git@github.com:mines-csci400/f23-lab.git
+
+7. Add all team members' names and CWIDs to the `AUTHORS` file.
 
 8. Double-check that:
    1. You have created the repo in the course organization and not
