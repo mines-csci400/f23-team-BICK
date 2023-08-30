@@ -50,7 +50,8 @@ Repository Setup
    - `TEAMNAME` is a name for your team.
 
 4. Give all team members access to the team repo in the course github
-   organization.
+   organization. Give the team "TAs_f23" (i.e., the github team that includes
+   TAs and instructors) access to the team repo.
 
 5. Add all team members' names and CWIDs to the `AUTHORS` file.
 
