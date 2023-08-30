@@ -57,12 +57,12 @@ Repository Setup
 6. Change the "origin" remote for your cloned repo to your newly
    created team repo and push.
    
-       git remote set-url origin https://github.com/mines-csci400/f23-team-TEAMNAME
+       git remote set-url origin git@github.com:mines-csci400/TEAM-REPO
        git push origin master
 
 7. Add a new "upstream" remote for the starter code repo.
 
-       git remote add upstream https://github.com/mines-csci400/f23-lab
+       git remote add upstream git@github.com:mines-csci400/f23-lab.git
 
 8. Double-check that:
    1. You have created the repo in the course organization and not
