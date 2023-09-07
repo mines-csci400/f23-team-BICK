@@ -10,7 +10,9 @@ exception IndexError
 let rec nth (i : int)  (l: 'a list) : 'a =
   match l with
     [] -> raise IndexError
-  | a::d -> a (* TODO, replace the a *)
+  | a::d -> 
+    if i = 0 then a else nth (i - 1) d
+
 
 (* Append two lists *)
 let rec append (l1 : 'a list) (l2: 'a list) : 'a list =
