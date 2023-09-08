@@ -17,12 +17,17 @@ let rec nth (i : int)  (l: 'a list) : 'a =
 (* Append two lists *)
 let rec append (l1 : 'a list) (l2: 'a list) : 'a list =
   (* TODO, replace [] *)
-  []
+  match l1 with
+  | [] -> l2
+  | head::tail -> head :: append tail l2
+
 
 (* Reverse a list *)
-let reverse (l : 'a list) : 'a list =
+let rec reverse (l : 'a list) : 'a list =
   (* TODO, replace [] *)
-  []
+  match l with
+  | [] -> []
+  | head::tail -> append (reverse tail) [head]
 
 (* Length of a list *)
 let length (l : 'a list) : int  =
