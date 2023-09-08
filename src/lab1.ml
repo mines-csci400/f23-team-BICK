@@ -94,7 +94,9 @@ let append_tests =
         str_int_list),
    [
      (Some("simple list"), ([1;2],[3;4]), Ok [1;2;3;4]);
-       (* TODO: Add more tests *)
+     (Some("Different Sized Lists"), ([2;3;5;6],[7;8;9]), Ok [2;3;5;6;7;8;9]);
+     (Some("Repeating Nums"), ([1;2;3],[1;2;3]), Ok [1;2;3;1;2;3]);
+     (Some("Empty Lists"), ([],[]), Ok []);
   ])
 
 let reverse_tests =
