@@ -48,17 +48,26 @@ let rec list_prefix (iend : int) (l : 'a list) : 'a list =
        a :: list_prefix (iend-1) d
 
 (* Return the part of list l beginning at istart and running through
-   the end of the list *)
+   the end of the list *) 
 let rec list_suffix (istart : int) (l : 'a list) : 'a list =
-  (* TODO, replace [] *)
-  []
+  match l with
+  | [] -> []
+  | fir::whole -> 
+    if istart <= 0 then l else list_suffix (istart - 1) whole
 
 
 (* Merge sorted lists l1 and l2 based on cmp.  The result is a sorted
-   list containing all elements from both l2 and l2. *)
+   list containing all elements from both l1 and l2. *)
 let rec merge (cmp : 'a->'a->bool) (l1 : 'a list) (l2 : 'a list) : 'a list =
-  (* TODO, replace [] *)
-  []
+  match (l1, l2) with 
+  | ([],_) -> l2
+  | (_,[]) -> l1
+  | (x::xl1, y::yl2) -> 
+    if cmp x y then
+      x :: merge cmp xl1 l2 
+    else
+      y :: merge cmp l1 yl2
+
 
 (* Sort list l via mergesort
 
