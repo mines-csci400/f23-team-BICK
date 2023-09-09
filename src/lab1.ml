@@ -16,7 +16,6 @@ let rec nth (i : int)  (l: 'a list) : 'a =
 
 (* Append two lists *)
 let rec append (l1 : 'a list) (l2: 'a list) : 'a list =
-  (* TODO, replace [] *)
   match l1 with
   | [] -> l2
   | head::tail -> head :: append tail l2
@@ -24,15 +23,15 @@ let rec append (l1 : 'a list) (l2: 'a list) : 'a list =
 
 (* Reverse a list *)
 let rec reverse (l : 'a list) : 'a list =
-  (* TODO, replace [] *)
   match l with
   | [] -> []
   | head::tail -> append (reverse tail) [head]
 
 (* Length of a list *)
-let length (l : 'a list) : int  =
-  (* TODO, replace 0 *)
-  0
+let rec length (l : 'a list) : int  =
+  match l with
+  |  [] -> 0
+  |  _::tail -> 1 + length tail
 
 
 (* Return the part of list l beginning at index 0 and ending at index
@@ -72,13 +71,21 @@ let rec merge (cmp : 'a->'a->bool) (l1 : 'a list) (l2 : 'a list) : 'a list =
 (* Sort list l via mergesort
 
    cmp is a function that compares two elements of list l.  When cmp
-   returns true, its first argument comes first in the sorted lest.
+   returns true, its first argument comes first in the sorted list.
    When cmp returns false, its second argument comes first in the
    sorted list.  *)
 
 let rec mergesort (cmp : 'a->'a->bool) (l:'a list) : 'a list =
-  (* TODO, replace [] *)
-  []
+  match l with
+  | [] -> l
+  | [_] -> l  
+  | _ ->
+      let mid = length l / 2 in
+      let left = list_prefix mid l in
+      let right = list_suffix mid l in
+      let sorted_left = mergesort cmp left in
+      let sorted_right = mergesort cmp right in
+      merge cmp sorted_left sorted_right
 
 
 (***********)
