@@ -158,7 +158,11 @@ let merge_tests =
         str_int_list),
    [
      (Some("simple list"), ((<),[1;3],[2;4;5]), Ok [1;2;3;4;5]);
-       (* TODO: Add more tests *)
+     (Some("already sorted"), ((>),[6;5;4;3],[2;1]), Ok [6;5;4;3;2;1]);
+     (Some("insert one element"), ((>),[8;8;8;8;8],[1]), Ok [8;8;8;8;8;1]);
+     (Some("empty lists"), ((>),[],[]), Ok []);
+     (Some("equal numbers"), ((>),[1;1;1;1;1],[1;1;]), Ok [1;1;1;1;1;1;1]);
+     (Some("reverse sorted"), ((>),[1],[6;5;4;3;2]), Ok [6;5;4;3;2;1]);
   ])
 
 
@@ -168,5 +172,9 @@ let mergesort_tests =
         str_int_list),
    [
      (Some("simple list"), ((<),[1;3;4;2;5]), Ok [1;2;3;4;5]);
-     (* TODO: Add more tests *)
+     (Some("decreasing order"), ((>),[1;3;4;2;5]), Ok [5;4;3;2;1]);
+     (Some("empty list"), ((>),[]), Ok []);
+     (Some("repeating numbers"), ((<),[4;3;3;5;2;3;7;7;4;4;4;8]), Ok [2;3;3;3;4;4;4;4;5;7;7;8]);
+     (Some("negative numbers"), ((>),[2;3;-1;5]), Ok [5;3;2;-1]);
+     (Some("one element"), ((=),[3]), Ok [3]);
    ])
