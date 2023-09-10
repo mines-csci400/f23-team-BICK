@@ -10,22 +10,28 @@ exception IndexError
 let rec nth (i : int)  (l: 'a list) : 'a =
   match l with
     [] -> raise IndexError
-  | a::d -> a (* TODO, replace the a *)
+  | a::d -> 
+    if i = 0 then a else nth (i - 1) d
+
 
 (* Append two lists *)
 let rec append (l1 : 'a list) (l2: 'a list) : 'a list =
-  (* TODO, replace [] *)
-  []
+  match l1 with
+  | [] -> l2
+  | head::tail -> head :: append tail l2
+
 
 (* Reverse a list *)
-let reverse (l : 'a list) : 'a list =
-  (* TODO, replace [] *)
-  []
+let rec reverse (l : 'a list) : 'a list =
+  match l with
+  | [] -> []
+  | head::tail -> append (reverse tail) [head]
 
 (* Length of a list *)
-let length (l : 'a list) : int  =
-  (* TODO, replace 0 *)
-  0
+let rec length (l : 'a list) : int  =
+  match l with
+  |  [] -> 0
+  |  _::tail -> 1 + length tail
 
 
 (* Return the part of list l beginning at index 0 and ending at index
@@ -41,28 +47,45 @@ let rec list_prefix (iend : int) (l : 'a list) : 'a list =
        a :: list_prefix (iend-1) d
 
 (* Return the part of list l beginning at istart and running through
-   the end of the list *)
+   the end of the list *) 
 let rec list_suffix (istart : int) (l : 'a list) : 'a list =
-  (* TODO, replace [] *)
-  []
+  match l with
+  | [] -> []
+  | fir::whole -> 
+    if istart <= 0 then l else list_suffix (istart - 1) whole
 
 
 (* Merge sorted lists l1 and l2 based on cmp.  The result is a sorted
-   list containing all elements from both l2 and l2. *)
+   list containing all elements from both l1 and l2. *)
 let rec merge (cmp : 'a->'a->bool) (l1 : 'a list) (l2 : 'a list) : 'a list =
-  (* TODO, replace [] *)
-  []
+  match (l1, l2) with 
+  | ([],_) -> l2
+  | (_,[]) -> l1
+  | (x::xl1, y::yl2) -> 
+    if cmp x y then
+      x :: merge cmp xl1 l2 
+    else
+      y :: merge cmp l1 yl2
+
 
 (* Sort list l via mergesort
 
    cmp is a function that compares two elements of list l.  When cmp
-   returns true, its first argument comes first in the sorted lest.
+   returns true, its first argument comes first in the sorted list.
    When cmp returns false, its second argument comes first in the
    sorted list.  *)
 
 let rec mergesort (cmp : 'a->'a->bool) (l:'a list) : 'a list =
-  (* TODO, replace [] *)
-  []
+  match l with
+  | [] -> l
+  | [_] -> l  
+  | _ ->
+      let mid = length l / 2 in
+      let left = list_prefix mid l in
+      let right = list_suffix mid l in
+      let sorted_left = mergesort cmp left in
+      let sorted_right = mergesort cmp right in
+      merge cmp sorted_left sorted_right
 
 
 (***********)
@@ -87,7 +110,9 @@ let append_tests =
         str_int_list),
    [
      (Some("simple list"), ([1;2],[3;4]), Ok [1;2;3;4]);
-       (* TODO: Add more tests *)
+     (Some("Different Sized Lists"), ([2;3;5;6],[7;8;9]), Ok [2;3;5;6;7;8;9]);
+     (Some("Repeating Nums"), ([1;2;3],[1;2;3]), Ok [1;2;3;1;2;3]);
+     (Some("Empty Lists"), ([],[]), Ok []);
   ])
 
 let reverse_tests =
