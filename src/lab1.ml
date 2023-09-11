@@ -113,13 +113,21 @@ let append_tests =
      (Some("Different Sized Lists"), ([2;3;5;6],[7;8;9]), Ok [2;3;5;6;7;8;9]);
      (Some("Repeating Nums"), ([1;2;3],[1;2;3]), Ok [1;2;3;1;2;3]);
      (Some("Empty Lists"), ([],[]), Ok []);
+     (Some("One Empty List Left"), ([],[1;2;3]), Ok [1;2;3]);
+     (Some("One Empty List Right"), ([1;2;3],[]), Ok [1;2;3]);
+     (Some("Negative Numbers"), ([-1;2;3], [1;-2;-3]), Ok [-1;2;3;1;-2;-3]);
   ])
 
 let reverse_tests =
   ("reverse", reverse, (=), (=), Some(str_int_list,str_int_list),
    [
      (Some("simple list"), [1;2;3;4;5], Ok[5;4;3;2;1]);
-       (* TODO: Add more tests *)
+     (Some("Long list"), [1;2;3;4;5;6;7;8;9;10], Ok[10;9;8;7;6;5;4;3;2;1]);
+     (Some("Same Number"), [1;1;1;1;1], Ok[1;1;1;1;1]);
+     (Some("Repeating Numbers"), [1;2;3;3;2;1], Ok[1;2;3;3;2;1]);
+     (Some("Empty List"), [], Ok[]);
+     (Some("Just Two Numbers"), [1;2;1;2], Ok[2;1;2;1]);
+     (Some("One Number"), [1], Ok[1]);
   ])
 
 let length_tests =
