@@ -140,7 +140,8 @@ let length_tests =
      (Some("simple list"), [1;2;3;4;5], Ok 5);
      (Some("empty list"), [], Ok 0);
      (Some("One Number"), [1], Ok 1);
-     (Some("List of lists"), [1;2;1;2;1;2], Ok 6);
+     (Some("repeating list"), [1;1;1;1;1;1], Ok 6);
+     (Some("long element list"),[-10000000000000000] , Ok 1);
   ])
 
 let list_prefix_tests =
