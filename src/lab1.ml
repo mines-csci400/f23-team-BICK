@@ -103,7 +103,9 @@ let nth_tests =
    [
      (Some("simple list"), (0, [1;2;3;4;5]), Ok 1);
      (Some("error"), (-1, [1;2;3;4;5]), Error IndexError);
-       (* TODO: Add more tests *)
+     (Some("list out of bounds"), (2, [4;5]), Error IndexError);
+     (Some("list middle"), (2, [4;5;7;9;100;11]), Ok 7);
+     (Some("list end index"), (5, [4;5;7;9;100;11]), Ok 11);
   ])
 
 let append_tests =
@@ -136,7 +138,9 @@ let length_tests =
   ("length", length, (=), (=), Some(str_int_list,string_of_int),
    [
      (Some("simple list"), [1;2;3;4;5], Ok 5);
-       (* TODO: Add more tests *)
+     (Some("empty list"), [], Ok 0);
+     (Some("One Number"), [1], Ok 1);
+     (Some("List of lists"), [1;2;1;2;1;2], Ok 6);
   ])
 
 let list_prefix_tests =
