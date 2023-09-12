@@ -50,6 +50,8 @@ let rec list_prefix (iend : int) (l : 'a list) : 'a list =
 (* Return the part of list l beginning at istart and running through
    the end of the list *) 
 let rec list_suffix (istart : int) (l : 'a list) : 'a list =
+if istart < 0 then raise IndexError
+else
   match l with
   | [] -> []
   | fir::whole -> 
@@ -142,7 +144,12 @@ let list_suffix_tests =
         str_int_list),
    [
      (Some("simple list"), (2,[1;2;3;4;5]), Ok [3;4;5]);
-       (* TODO: Add more tests *)
+     (None, (1, [1;2;3;4;5]), Ok [2;3;4;5]);
+     (None, (3, [1;2;3;4;5]), Ok [4;5]); 
+     (None, (4, [1;2;3;4;5]), Ok [5]); 
+     (None, (0, [1;2;3;4;5]), Ok [1;2;3;4;5]); 
+     (None, (-1, [1;2;3;4;5]), Error IndexError); 
+  
   ])
 
 let merge_tests =
@@ -151,7 +158,13 @@ let merge_tests =
         str_int_list),
    [
      (Some("simple list"), ((<),[1;3],[2;4;5]), Ok [1;2;3;4;5]);
-       (* TODO: Add more tests *)
+     (None, ((<),[1;3;5],[2;4;6]), Ok [1;2;3;4;5;6]);
+     (None, ((<),[0;5;7],[1;4]), Ok [0;1;4;5;7]);
+     (None, ((<),[],[1;4]), Ok [1;4]);
+     (None, ((<),[1;2;3;4],[]), Ok [1;2;3;4]);
+     (None, ((<),[],[]), Ok []);
+
+
   ])
 
 
