@@ -85,18 +85,6 @@ let rec quicksort_simple (cmp : 'a->'a->bool) (l : 'a list) : 'a list =
   (* TODO, replace l *)
   l
 
-(* The better implementation of quicksort elides the append by passing
-   a "tail" list to recursive calls.  Sorted results are directly
-   cons'ed onto the tail, avoiding the need for an extra append. *)
-let quicksort_better (cmp : 'a->'a->bool) (l : 'a list) : 'a list =
-  let rec f (cmp : 'a->'a->bool) (l : 'a list) (r : 'a list) : 'a list =
-    (* r is the tail: everything that must come after l in the sorted
-       list. Passing r to f saves us from having to append sorted
-       lists. *)
-    (* TODO, replace l @ r *)
-    l @ r
-  in f cmp l []
-
 (***********)
 (** Tests **)
 (***********)
@@ -240,12 +228,6 @@ let pivot_tests =
 
 let quicksort_simple_tests =
   ("quicksort_simple", (fun (cmp,l) -> quicksort_simple cmp l), (=), (=),
-   Some((fun (cmp,l) -> str_int_list l),
-        str_int_list),
-   sort_test_cases)
-
-let quicksort_better_tests =
-  ("quicksort_simple", (fun (cmp,l) -> quicksort_better cmp l), (=), (=),
    Some((fun (cmp,l) -> str_int_list l),
         str_int_list),
    sort_test_cases)

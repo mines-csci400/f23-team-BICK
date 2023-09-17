@@ -18,7 +18,4 @@ let main () =
   Testing.print_tests Lab2.selectionsort_tests;
   Testing.print_tests Lab2.pivot_tests;
   Testing.print_tests Lab2.quicksort_simple_tests;
-  Testing.print_tests Lab2.quicksort_better_tests;
-;;
-
 main ()

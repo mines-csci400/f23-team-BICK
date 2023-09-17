@@ -23,7 +23,6 @@ Instructions
    - `selectionsort` (~5 line)
    - `pivot` using fold (~8 lines)
    - `quicksort_simple` (~5 lines)
-   - `quicksort_better` (~10 lines)
 
 3. Add at least 5 new *non-trivial* unit tests per function, at the
    locations marked by `TODO` comments.
