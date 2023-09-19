@@ -55,14 +55,18 @@ let flatten (l : 'a list list) : 'a list =
 
 (* Insert elt into sorted list l in sorted order *)
 let rec insert (cmp : 'a->'a->bool) (elt :'a) (l:'a list) : 'a list =
-  (* TODO, replace [] *)
-  []
+  match l with 
+  | [] -> [elt]
+  | head::tail ->  
+     if cmp elt head then
+       elt :: l
+     else
+       head :: (insert cmp elt tail)
 
-let insertionsort (cmp : 'a->'a->bool) (l:'a list) : 'a list =
+let insertionsort (cmp : 'a -> 'a -> bool) (l : 'a list) : 'a list =
   (* TODO, replace l *)
   l
-
-
+  
 (* Selection Sort *)
 
 (* Select the initial element from l based on cmp.  Return a tuple of
