@@ -7,8 +7,11 @@ open Util (* see util.ml *)
 (*** Implementing higher-order functions ***)
 
 let rec map (f : 'a->'b) (l : 'a list) : 'b list =
-  (* TODO, replace [] *)
-  []
+  match l with
+  | [] -> []
+  | head::tail -> (f head) :: (map f tail)
+  
+  
 
 let rec filter (f : 'a->bool) (l : 'a list) : 'a list =
   (* TODO, replace l *)
