@@ -9,7 +9,7 @@ LIBS = str.$(CMA) #unix.$(CMA)
 
 LABS =
 
-default: lab0
+default: lab0 lab1 lab2
 
 
 ###############
