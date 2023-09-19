@@ -14,8 +14,14 @@ let rec map (f : 'a->'b) (l : 'a list) : 'b list =
   
 
 let rec filter (f : 'a->bool) (l : 'a list) : 'a list =
-  (* TODO, replace l *)
-  l
+  match l with 
+  | [] -> []
+  | head::tail ->  
+     if f head then
+       head :: filter f tail
+     else
+       filter f tail
+    
 
 let rec fold_left (f: 'y ->'x->'y) (y:'y) (l:'x list) : 'y =
   (* TODO, replace y *)
