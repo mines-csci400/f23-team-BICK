@@ -113,7 +113,13 @@ let map_tests =
         str_int_list),
    [
      (Some("simple list"), ((fun x -> 1+x), [1;2;3;4;5]), Ok [2;3;4;5;6]);
-       (* TODO: Add more tests *)
+     (Some("subtraction test"), ((fun x -> x-1), [1;2;3;4;5]), Ok [0;1;2;3;4]);
+     (Some("mult test"), ((fun x -> x*2), [1;2;3;4;5]), Ok [2;4;6;8;10]); 
+     (Some("small test"), ((fun x -> x*3), [7; 8]), Ok [21;24]); 
+     (Some("empty test"), ((fun x -> x-1), []), Ok []);
+     (Some("last test"), ((fun x -> x/3), [3;6;9;12]), Ok [1;2;3;4]);
+
+
   ])
 
 let filter_tests =
