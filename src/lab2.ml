@@ -24,11 +24,11 @@ let rec filter (f : 'a->bool) (l : 'a list) : 'a list =
     
 
 let rec fold_left (f: 'y ->'x->'y) (y:'y) (l:'x list) : 'y =
-  (* TODO, replace y *)
+  (* TODO, ISA replace y *)
   y
 
 let rec fold_right (f : 'x->'y->'y) (y:'y) (l:'x list) : 'y =
-  (* TODO, replace y *)
+  (* TODO, ISA replace y *)
   y
 
 
@@ -37,17 +37,17 @@ let rec fold_right (f : 'x->'y->'y) (y:'y) (l:'x list) : 'y =
 
 (* Concatenate two lists. *)
 let append (l1 : 'a list) (l2 : 'a list) : 'a list =
-  (* TODO, replace [] *)
+  (* TODO, ISA replace [] *)
   []
 
 (* rev_append l1 l2 reverses l1 and concatenates it with l2 *)
 let rev_append (l1 : 'a list) (l2 : 'a list) : 'a list =
-  (* TODO, replace [] *)
+  (* TODO, ISA replace [] *)
   []
 
 (* Concatenate a list of lists. *)
 let flatten (l : 'a list list) : 'a list =
-  (* TODO, replace [] *)
+  (* TODO, ISA replace [] *)
   []
 
 
