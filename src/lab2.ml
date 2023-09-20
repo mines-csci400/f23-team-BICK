@@ -24,12 +24,14 @@ let rec filter (f : 'a->bool) (l : 'a list) : 'a list =
     
 
 let rec fold_left (f: 'y ->'x->'y) (y:'y) (l:'x list) : 'y =
-  (* TODO, ISA replace y *)
-  y
+  match l with
+  |[] -> y
+  | head::tail -> fold_left f (f y head) tail
 
 let rec fold_right (f : 'x->'y->'y) (y:'y) (l:'x list) : 'y =
-  (* TODO, ISA replace y *)
-  y
+  match l with
+  | [] -> y
+  | head::tail -> f head (fold_right f y tail)
 
 
 (*** Using higher-order functions ***)
@@ -89,8 +91,11 @@ let rec selectionsort (cmp : 'a->'a->bool) (l:'a list) : 'a list =
 (* Partion list l around elt.  Return a tuple consisting of all
    elements before elt and all elements after elt. *)
 let pivot (cmp : 'a->'a->bool) (elt :'a) (l:'a list) : 'a list * 'a list =
-  (* TODO, ISA replace ([],[]) *)
-  ([], [])
+  let create_lists (before, after) x =
+    if cmp x elt then (x::before, after)
+    else (before, x::after)
+  in
+  fold_left create_lists ([],[]) l
 
 (* The simple implementation of quicksort recurses on the two sublists
    and appends the sorted results. *)
@@ -142,7 +147,9 @@ let fold_left_tests =
    [
      (Some("+"), ((+), 0, [1;2;3]), Ok 6);
      (Some("-"), ((-), 0, [1;2;3]), Ok (-6));
-       (* TODO: Add more tests *)
+     (Some("-"), ((-), 0, []), Ok (0));
+     (Some("+"), ((+), 3, [0]), Ok (3));
+     (Some("/"), ((/), 6, [1;2;3]), Ok (1));
   ])
 
 let fold_right_tests =
@@ -152,7 +159,9 @@ let fold_right_tests =
    [
      (Some("+"), ((+), 0, [1;2;3]), Ok 6);
      (Some("-"), ((-), 0, [1;2;3]), Ok 2);
-     (* TODO: Add more tests *)
+     (Some("+"), ((+), 0, []), Ok (0));
+     (Some("-"), ((-), 3, [0]), Ok (-3));
+     (Some("/"), ((/), 1, [3;2;1]), Ok (1));
   ])
 
 
@@ -242,7 +251,9 @@ let pivot_tests =
    [
      (Some("simple <"), ((<), 0, [-1;1;0;-2; 2]), Ok ([-2; -1],[2; 0; 1]));
      (Some("simple >"), ((>), 0, [-1;1;0;-2; 2]), Ok ([2; 1], [-2; 0; -1]));
-     (* TODO: Add more tests *)
+     (Some("empty >"), ((>), 0, []), Ok ([], []));
+     (Some("all >"), ((<), 0, [1;1;0;2; 2]), Ok ([], [2; 0; 1; 2; 1]));
+     (Some("element not found"), ((>), 0, [-1;1;3;-2; 2]), Ok ([2; 3; 1],[-2; -1]));
   ])
 
 let quicksort_simple_tests =
