@@ -85,7 +85,7 @@ let rec selectionsort (cmp : 'a->'a->bool) (l:'a list) : 'a list =
 (* Partion list l around elt.  Return a tuple consisting of all
    elements before elt and all elements after elt. *)
 let pivot (cmp : 'a->'a->bool) (elt :'a) (l:'a list) : 'a list * 'a list =
-  (* TODO, replace ([],[]) *)
+  (* TODO, ISA replace ([],[]) *)
   ([], [])
 
 (* The simple implementation of quicksort recurses on the two sublists
