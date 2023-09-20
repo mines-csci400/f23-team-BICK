@@ -39,13 +39,11 @@ let rec fold_right (f : 'x->'y->'y) (y:'y) (l:'x list) : 'y =
 
 (* Concatenate two lists. *)
 let append (l1 : 'a list) (l2 : 'a list) : 'a list =
-  (* TODO, ISA replace [] *)
-  []
+  fold_left (fun acc x -> acc @ [x]) l1 l2
 
 (* rev_append l1 l2 reverses l1 and concatenates it with l2 *)
 let rev_append (l1 : 'a list) (l2 : 'a list) : 'a list =
-  (* TODO, ISA replace [] *)
-  []
+  fold_left (fun acc x -> x :: acc) l2 l1
 
 (* Concatenate a list of lists. *)
 let flatten (l : 'a list list) : 'a list =
@@ -171,7 +169,10 @@ let append_tests =
         str_int_list),
    [
      (Some("simple list"), ([1;2],[3;4]), Ok [1;2;3;4]);
-       (* TODO: Add more tests *)
+     (Some("empty list"), ([],[]), Ok []);
+     (Some("one empty list"), ([1;2],[]), Ok [1;2]);
+     (Some("equal lists"), ([1;2],[1;2]), Ok [1;2;1;2]);
+     (Some("other empty list"), ([],[1;2]), Ok [1;2;]);
   ])
 
 let rev_append_tests =
@@ -180,7 +181,10 @@ let rev_append_tests =
         str_int_list),
    [
      (Some("simple list"), ([1;2],[3;4]), Ok [2;1;3;4]);
-       (* TODO: Add more tests *)
+     (Some("empty list"), ([],[]), Ok []);
+     (Some("one empty list"), ([1;2],[]), Ok [2;1]);
+     (Some("equal lists"), ([1;2],[1;2]), Ok [2;1;1;2]);
+     (Some("other empty list"), ([],[1;2]), Ok [1;2;]);
   ])
 
 let flatten_tests =
