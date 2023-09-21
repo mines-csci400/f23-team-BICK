@@ -46,9 +46,11 @@ let rev_append (l1 : 'a list) (l2 : 'a list) : 'a list =
   fold_left (fun acc x -> x :: acc) l2 l1
 
 (* Concatenate a list of lists. *)
-let flatten (l : 'a list list) : 'a list =
+let rec flatten (l : 'a list list) : 'a list =
   (* TODO, ISA replace [] *)
-  []
+  match l with
+  | [] -> []
+  | head::tail -> head @ flatten tail
 
 
 (* Insertion Sort *)
@@ -194,7 +196,9 @@ let flatten_tests =
    [
      (Some("simple list"), [[1;2];[3;4]], Ok [1;2;3;4]);
      (Some("simple list 2"), [[3;4]; [1;2]], Ok [3;4;1;2]);
-     (* TODO: Add more tests *)
+     (Some("empty list"), [[]; []], Ok []);
+     (Some("one empty list"), [[]; [1;2]], Ok [1;2]);
+     (Some("cloned list"), [[1;2]; [1;2]], Ok [1;2;1;2]);
    ]
   )
 
