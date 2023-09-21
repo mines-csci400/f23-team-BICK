@@ -66,8 +66,7 @@ let rec insert (cmp : 'a->'a->bool) (elt :'a) (l:'a list) : 'a list =
        head :: (insert cmp elt tail)
 
 let insertionsort (cmp : 'a -> 'a -> bool) (l : 'a list) : 'a list =
-  (* TODO, replace l *)
-  l
+  fold_left (fun insert x -> insert @ [x]) l l
   
 (* Selection Sort *)
 
@@ -202,10 +201,14 @@ let flatten_tests =
    ]
   )
 
-
 let sort_test_cases = [
-    (Some("simple list"), ((<),[1;3;4;2;5]), Ok [1;2;3;4;5]);
-    (* TODO: Add more tests *)
+    (Some("simple list"), ((<), [1;3;4;2;5]), Ok [1;2;3;4;5]);
+    (Some("longer <"), ((<), [-1;1;2;-7]), Ok ([-7;-1; 1; 2]));
+    (Some("longer >"), ((>), [2;1;-1;9]), Ok ([9;2; 1; -1]));
+    (Some("empty list"), ((>), []), Ok ([]));
+    (Some("equal value"), ((>), [3;3;3]), Ok ([3;3;3]));
+    (Some("one positive"), ((<), [-4;8;-3;-1]), Ok ([-4;-3;-1;8]));
+    (Some("one negative"), ((>),  [9;7;-6;5]), Ok ([9;7;5;-6]));
   ]
 
 let insert_tests =
@@ -216,7 +219,10 @@ let insert_tests =
    [
      (Some("simple <"), ((<), 0, [-1;1;2]), Ok ([-1; 0; 1; 2]));
      (Some("simple >"), ((>), 0, [2;1;-1]), Ok ([2; 1; 0; -1]));
-     (* TODO: Add more tests *)
+     (Some("empty list"), ((>), 1, []), Ok ([1]));
+     (Some("equal value"), ((>), 3, [3;3;3]), Ok ([3;3;3;3]));
+     (Some("all negative"), ((<), 8, [-4;-3;-1]), Ok ([-4;-3;-1;8]));
+     (Some("all positive"), ((>), -6, [9;7;5]), Ok ([9;7;5;-6]));
    ])
 
 let insertionsort_tests =
