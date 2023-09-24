@@ -66,7 +66,7 @@ let rec insert (cmp : 'a->'a->bool) (elt :'a) (l:'a list) : 'a list =
        head :: (insert cmp elt tail)
 
 let insertionsort (cmp : 'a -> 'a -> bool) (l : 'a list) : 'a list =
-  fold_left (fun insert x -> insert @ [x]) [] l
+  fold_left (fun list x -> insert cmp x list) [] l
   
 (* Selection Sort *)
 
