@@ -99,8 +99,15 @@ let pivot (cmp : 'a->'a->bool) (elt :'a) (l:'a list) : 'a list * 'a list =
 (* The simple implementation of quicksort recurses on the two sublists
    and appends the sorted results. *)
 let rec quicksort_simple (cmp : 'a->'a->bool) (l : 'a list) : 'a list =
-  (* TODO, replace l *)
-  l
+  match l with
+  | [] -> []
+  | [first] -> [first]
+  | beg :: rest ->
+    let bef, after = pivot cmp beg rest in 
+    let sort_bef = quicksort_simple cmp bef in
+    let sort_after = quicksort_simple cmp after in
+    sort_bef @ [beg] @ sort_after
+
 
 (***********)
 (** Tests **)
