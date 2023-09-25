@@ -24,12 +24,14 @@ let rec filter (f : 'a->bool) (l : 'a list) : 'a list =
     
 
 let rec fold_left (f: 'y ->'x->'y) (y:'y) (l:'x list) : 'y =
-  (* TODO, replace y *)
-  y
+  match l with
+  |[] -> y
+  | head::tail -> fold_left f (f y head) tail
 
 let rec fold_right (f : 'x->'y->'y) (y:'y) (l:'x list) : 'y =
-  (* TODO, replace y *)
-  y
+  match l with
+  | [] -> y
+  | head::tail -> f head (fold_right f y tail)
 
 
 (*** Using higher-order functions ***)
@@ -37,32 +39,35 @@ let rec fold_right (f : 'x->'y->'y) (y:'y) (l:'x list) : 'y =
 
 (* Concatenate two lists. *)
 let append (l1 : 'a list) (l2 : 'a list) : 'a list =
-  (* TODO, replace [] *)
-  []
+  fold_left (fun acc x -> acc @ [x]) l1 l2
 
 (* rev_append l1 l2 reverses l1 and concatenates it with l2 *)
 let rev_append (l1 : 'a list) (l2 : 'a list) : 'a list =
-  (* TODO, replace [] *)
-  []
+  fold_left (fun acc x -> x :: acc) l2 l1
 
 (* Concatenate a list of lists. *)
-let flatten (l : 'a list list) : 'a list =
-  (* TODO, replace [] *)
-  []
+let rec flatten (l : 'a list list) : 'a list =
+  (* TODO, ISA replace [] *)
+  match l with
+  | [] -> []
+  | head::tail -> head @ flatten tail
 
 
 (* Insertion Sort *)
 
 (* Insert elt into sorted list l in sorted order *)
 let rec insert (cmp : 'a->'a->bool) (elt :'a) (l:'a list) : 'a list =
-  (* TODO, replace [] *)
-  []
+  match l with 
+  | [] -> [elt]
+  | head::tail ->  
+     if cmp elt head then
+       elt :: l
+     else
+       head :: (insert cmp elt tail)
 
-let insertionsort (cmp : 'a->'a->bool) (l:'a list) : 'a list =
-  (* TODO, replace l *)
-  l
-
-
+let insertionsort (cmp : 'a -> 'a -> bool) (l : 'a list) : 'a list =
+  fold_left (fun list x -> insert cmp x list) [] l
+  
 (* Selection Sort *)
 
 (* Select the initial element from l based on cmp.  Return a tuple of
@@ -72,27 +77,46 @@ let select (cmp : 'a->'a->bool) (l:'a list) : 'a * 'a list =
   match l with
   | [] -> invalid_arg "select"
   | a::d ->
-     (* TODO, replce (a,d) *)
-     (a,d)
+      let (first_val, list) = 
+        fold_left (fun(i,l) x ->
+          if cmp x i then
+            (x, i::l)
+          else
+            (i, x::l))
+        (a, [])
+        d
+      in (first_val, list)
 
-let rec selectionsort (cmp : 'a->'a->bool) (l:'a list) : 'a list =
-  (* TODO, replace l *)
-  l
-
+let rec selectionsort (cmp : 'a -> 'a -> bool) (l : 'a list) : 'a list =
+  match l with
+  | [] -> [] 
+  | a :: d ->
+    let i, list = select cmp l in
+    i :: selectionsort cmp list
 
 (* Quicksort *)
 
 (* Partion list l around elt.  Return a tuple consisting of all
    elements before elt and all elements after elt. *)
 let pivot (cmp : 'a->'a->bool) (elt :'a) (l:'a list) : 'a list * 'a list =
-  (* TODO, replace ([],[]) *)
-  ([], [])
+  let create_lists (before, after) x =
+    if cmp x elt then (x::before, after)
+    else (before, x::after)
+  in
+  fold_left create_lists ([],[]) l
 
 (* The simple implementation of quicksort recurses on the two sublists
    and appends the sorted results. *)
 let rec quicksort_simple (cmp : 'a->'a->bool) (l : 'a list) : 'a list =
-  (* TODO, replace l *)
-  l
+  match l with
+  | [] -> []
+  | [first] -> [first]
+  | beg :: rest ->
+    let bef, after = pivot cmp beg rest in 
+    let sort_bef = quicksort_simple cmp bef in
+    let sort_after = quicksort_simple cmp after in
+    sort_bef @ [beg] @ sort_after
+
 
 (***********)
 (** Tests **)
@@ -113,7 +137,13 @@ let map_tests =
         str_int_list),
    [
      (Some("simple list"), ((fun x -> 1+x), [1;2;3;4;5]), Ok [2;3;4;5;6]);
-       (* TODO: Add more tests *)
+     (Some("subtraction test"), ((fun x -> x-1), [1;2;3;4;5]), Ok [0;1;2;3;4]);
+     (Some("mult test"), ((fun x -> x*2), [1;2;3;4;5]), Ok [2;4;6;8;10]); 
+     (Some("small test"), ((fun x -> x*3), [7; 8]), Ok [21;24]); 
+     (Some("empty test"), ((fun x -> x-1), []), Ok []);
+     (Some("last test"), ((fun x -> x/3), [3;6;9;12]), Ok [1;2;3;4]);
+
+
   ])
 
 let filter_tests =
@@ -132,7 +162,9 @@ let fold_left_tests =
    [
      (Some("+"), ((+), 0, [1;2;3]), Ok 6);
      (Some("-"), ((-), 0, [1;2;3]), Ok (-6));
-       (* TODO: Add more tests *)
+     (Some("-"), ((-), 0, []), Ok (0));
+     (Some("+"), ((+), 3, [0]), Ok (3));
+     (Some("/"), ((/), 6, [1;2;3]), Ok (1));
   ])
 
 let fold_right_tests =
@@ -142,7 +174,9 @@ let fold_right_tests =
    [
      (Some("+"), ((+), 0, [1;2;3]), Ok 6);
      (Some("-"), ((-), 0, [1;2;3]), Ok 2);
-     (* TODO: Add more tests *)
+     (Some("+"), ((+), 0, []), Ok (0));
+     (Some("-"), ((-), 3, [0]), Ok (-3));
+     (Some("/"), ((/), 1, [3;2;1]), Ok (1));
   ])
 
 
@@ -152,7 +186,10 @@ let append_tests =
         str_int_list),
    [
      (Some("simple list"), ([1;2],[3;4]), Ok [1;2;3;4]);
-       (* TODO: Add more tests *)
+     (Some("empty list"), ([],[]), Ok []);
+     (Some("one empty list"), ([1;2],[]), Ok [1;2]);
+     (Some("equal lists"), ([1;2],[1;2]), Ok [1;2;1;2]);
+     (Some("other empty list"), ([],[1;2]), Ok [1;2;]);
   ])
 
 let rev_append_tests =
@@ -161,7 +198,10 @@ let rev_append_tests =
         str_int_list),
    [
      (Some("simple list"), ([1;2],[3;4]), Ok [2;1;3;4]);
-       (* TODO: Add more tests *)
+     (Some("empty list"), ([],[]), Ok []);
+     (Some("one empty list"), ([1;2],[]), Ok [2;1]);
+     (Some("equal lists"), ([1;2],[1;2]), Ok [2;1;1;2]);
+     (Some("other empty list"), ([],[1;2]), Ok [1;2;]);
   ])
 
 let flatten_tests =
@@ -171,14 +211,20 @@ let flatten_tests =
    [
      (Some("simple list"), [[1;2];[3;4]], Ok [1;2;3;4]);
      (Some("simple list 2"), [[3;4]; [1;2]], Ok [3;4;1;2]);
-     (* TODO: Add more tests *)
+     (Some("empty list"), [[]; []], Ok []);
+     (Some("one empty list"), [[]; [1;2]], Ok [1;2]);
+     (Some("cloned list"), [[1;2]; [1;2]], Ok [1;2;1;2]);
    ]
   )
 
-
 let sort_test_cases = [
-    (Some("simple list"), ((<),[1;3;4;2;5]), Ok [1;2;3;4;5]);
-    (* TODO: Add more tests *)
+    (Some("simple list"), ((<), [1;3;4;2;5]), Ok [1;2;3;4;5]);
+    (Some("longer <"), ((<), [-1;1;2;-7]), Ok ([-7;-1; 1; 2]));
+    (Some("longer >"), ((>), [2;1;-1;9]), Ok ([9;2; 1; -1]));
+    (Some("empty list"), ((>), []), Ok ([]));
+    (Some("equal value"), ((>), [3;3;3]), Ok ([3;3;3]));
+    (Some("one positive"), ((<), [-4;8;-3;-1]), Ok ([-4;-3;-1;8]));
+    (Some("one negative"), ((>),  [9;7;-6;5]), Ok ([9;7;5;-6]));
   ]
 
 let insert_tests =
@@ -189,7 +235,10 @@ let insert_tests =
    [
      (Some("simple <"), ((<), 0, [-1;1;2]), Ok ([-1; 0; 1; 2]));
      (Some("simple >"), ((>), 0, [2;1;-1]), Ok ([2; 1; 0; -1]));
-     (* TODO: Add more tests *)
+     (Some("empty list"), ((>), 1, []), Ok ([1]));
+     (Some("equal value"), ((>), 3, [3;3;3]), Ok ([3;3;3;3]));
+     (Some("all negative"), ((<), 8, [-4;-3;-1]), Ok ([-4;-3;-1;8]));
+     (Some("all positive"), ((>), -6, [9;7;5]), Ok ([9;7;5;-6]));
    ])
 
 let insertionsort_tests =
@@ -210,7 +259,10 @@ let select_tests =
    [
      (Some("simple <"), ((<), [1;-1;2]), Ok (-1,[2;1]));
      (Some("simple >"), ((>), [1;-1;2]), Ok (2,[1;-1]));
-     (* TODO: Add more tests *)
+     (Some("long <"), ((<), [1;2;3;4;5;-1]), Ok (-1,[5;4;3;2;1]));
+     (Some("long >"), ((>), [1;2;3;4;5;-1]), Ok (5,[4;3;2;1;-1]));
+     (Some("Same nums <"), ((<), [1;1;1;1]), Ok (1,[1;1;1]));
+     (Some("Same nums >"), ((>), [1;1;1;1]), Ok (1,[1;1;1]));
    ])
 
 
@@ -232,7 +284,9 @@ let pivot_tests =
    [
      (Some("simple <"), ((<), 0, [-1;1;0;-2; 2]), Ok ([-2; -1],[2; 0; 1]));
      (Some("simple >"), ((>), 0, [-1;1;0;-2; 2]), Ok ([2; 1], [-2; 0; -1]));
-     (* TODO: Add more tests *)
+     (Some("empty >"), ((>), 0, []), Ok ([], []));
+     (Some("all >"), ((<), 0, [1;1;0;2; 2]), Ok ([], [2; 0; 1; 2; 1]));
+     (Some("element not found"), ((>), 0, [-1;1;3;-2; 2]), Ok ([2; 3; 1],[-2; -1]));
   ])
 
 let quicksort_simple_tests =
