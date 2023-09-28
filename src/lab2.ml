@@ -10,8 +10,6 @@ let rec map (f : 'a->'b) (l : 'a list) : 'b list =
   match l with
   | [] -> []
   | head::tail -> (f head) :: (map f tail)
-  
-  
 
 let rec filter (f : 'a->bool) (l : 'a list) : 'a list =
   match l with 
@@ -22,7 +20,6 @@ let rec filter (f : 'a->bool) (l : 'a list) : 'a list =
      else
        filter f tail
     
-
 let rec fold_left (f: 'y ->'x->'y) (y:'y) (l:'x list) : 'y =
   match l with
   |[] -> y
@@ -51,7 +48,6 @@ let rec flatten (l : 'a list list) : 'a list =
   match l with
   | [] -> []
   | head::tail -> head @ flatten tail
-
 
 (* Insertion Sort *)
 
@@ -130,7 +126,6 @@ let list_cmp cmp l1 l2 =
 let int_list_cmp l1 l2 =
   list_cmp (-) l1 l2
 
-
 let map_tests =
   ("map", (fun (f,l)->map f l), (=), (=),
    Some((fun (f,l) -> str_int_list l),
@@ -142,8 +137,6 @@ let map_tests =
      (Some("small test"), ((fun x -> x*3), [7; 8]), Ok [21;24]); 
      (Some("empty test"), ((fun x -> x-1), []), Ok []);
      (Some("last test"), ((fun x -> x/3), [3;6;9;12]), Ok [1;2;3;4]);
-
-
   ])
 
 let filter_tests =
@@ -152,7 +145,11 @@ let filter_tests =
         str_int_list),
    [
      (Some("simple list"), ((fun x -> (x mod 2)=0), [1;2;3;4;5]), Ok [2;4]);
-       (* TODO: Add more tests *)
+      (Some("greater than"), ((fun x -> (x > 2)), [2;4;6]), Ok [4;6]);
+      (Some("less than"), ((fun x -> (x < 2)), [4;2;1;0;-6]), Ok [1;0;-6]);
+      (Some("empty filter"), ((fun x -> (x = 0)), [1;2;3;4;5]), Ok []);
+      (Some("multiple values"), ((fun x -> (x = 3)), [5;2;3;4;7;3]), Ok [3;3]);
+      (Some("multiple of 3"), ((fun x -> (x mod 3)=0), [1;3;4;9]), Ok [3;9]);
   ])
 
 let fold_left_tests =
@@ -178,7 +175,6 @@ let fold_right_tests =
      (Some("-"), ((-), 3, [0]), Ok (-3));
      (Some("/"), ((/), 1, [3;2;1]), Ok (1));
   ])
-
 
 let append_tests =
   ("append", (fun (l1,l2)->append l1 l2), (=), (=),
@@ -265,13 +261,11 @@ let select_tests =
      (Some("Same nums >"), ((>), [1;1;1;1]), Ok (1,[1;1;1]));
    ])
 
-
 let selectionsort_tests =
   ("selectionsort", (fun (cmp,l) -> selectionsort cmp l), (=), (=),
    Some((fun (cmp,l) -> str_int_list l),
         str_int_list),
    sort_test_cases)
-
 
 let pivot_test_eq (a1,b1) (a2,b2) =
   (int_list_cmp a1 a2) && (int_list_cmp b1 b2)
