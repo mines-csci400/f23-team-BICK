@@ -12,6 +12,7 @@ type 'v binary_tree =
   | Empty
   | Node of 'v binary_tree * 'v * 'v binary_tree
 
+
 (* Result of comparing two values *)
 (* if a < b, then cmp a b -> Lesser *)
 (* if a = b, then cmp a b -> Equal *)
@@ -44,19 +45,25 @@ let map_revorder (f : 'v -> 'a) (t : 'v binary_tree) : 'a list =
  * That is, (recursively) are all elements to the left less the the
  * current element and all elements to the right greater than the
  * current element *)
+
 let is_bst (cmp : 'v cmp_fun) (t : 'v binary_tree)  : bool =
-  (* TODO, replace false *)
   false
+
 
 (* Return the maximum element of a binary search tree. *)
 let rec bst_max (t : 'v binary_tree) : 'v option =
-  (* TODO, replace None *)
-  None
+  match t with
+  | Empty -> None
+  | Node (_, value, Empty) -> Some value
+  | Node (_, _, right) -> bst_max right
+
 
 (* Return the minimum element of a binary search tree. *)
 let rec bst_min t : 'v option =
-  (* TODO, replace None *)
-  None
+match t with
+  | Empty -> None
+  | Node (Empty, value, _) -> Some value
+  | Node (left, _, _) -> bst_min left
 
 (* Insert element x into binary search tree t.
  *
