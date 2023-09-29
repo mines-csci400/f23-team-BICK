@@ -84,8 +84,30 @@ let rec bst_search (cmp : 'v cmp_fun) (t : 'v binary_tree) (x : 'v) : bool =
  * Return a tuple containing the new binary tree and an option of the
  * removed element.  *)
 let rec bst_remove_min (t : 'v binary_tree) : 'v binary_tree * 'v option =
-  (* TODO, replace (t, None) *)
-  (t, None)
+  (* TODO, replace (t, None) ISA*)
+  match t with
+  | Empty -> (Empty, None)
+  | Node (l, x, r) -> 
+    match l with
+    | Empty -> (r, Some x)
+    | Node (_, _, _) -> 
+      let (z, y) = bst_remove_min l in
+        (Node (z, x, r), y)
+
+let remove_x (t : 'v binary_tree) : 'v binary_tree * bool=
+ match t with
+ | Node(l,x,r) -> 
+    match l with
+      | Empty -> 
+        match r with
+        | Empty -> (Empty, true)
+        | Node(_, _, _) -> (r, true)
+      | Node(_, _, _) -> 
+        match r with 
+        | Empty -> (l, true)
+        | Node(_, _, _) -> 
+          let (w, z) = bst_remove_min r in (Node (l, x, w), true)
+
 
 (* Remove the element x from binary search tree t
  *
@@ -94,8 +116,14 @@ let rec bst_remove_min (t : 'v binary_tree) : 'v binary_tree * 'v option =
  * found *)
 let rec bst_remove (cmp : 'v cmp_fun) (t : 'v binary_tree) (x : 'v)
         : 'v binary_tree * bool =
-  (* TODO, replace (t, false) *)
-  (t, false)
+  match t with
+  | Empty -> (Empty, false)
+  | Node (l, y, r) ->
+    match cmp x y with
+      | Lesser -> let (newL, found) = bst_remove cmp l x in (Node(newL, y, r), found)
+      | Greater -> let (newR, found) = bst_remove cmp r x in (Node(l, y, newR), found)
+      | Equal -> remove_x t
+      
 
 
 
@@ -338,7 +366,6 @@ let bst_remove_min_tests =
      (Some("empty tree"),
       Empty,
       Ok (Empty, None));
-     (* TODO *)
    ])
 
 
@@ -353,7 +380,15 @@ let bst_remove_tests_int =
      (Some("simple tree"),
       (Node(l1, 2, l3), 1),
       Ok ((Node (Empty,2,l3)), true));
-     (* TODO *)
+     (Some("simple tree, element not found"),
+      (Node(l1, 2, l3), 5),
+      Ok ((Node (l1,2,l3)), false));
+     (Some("empty tree, element not found"),
+      (Empty, 5),
+      Ok (Empty, false));
+     (Some("empty subtree, element  found"),
+      (Node(Empty, 5, Empty), 5),
+      Ok (Empty, true));
    ])
 
 
