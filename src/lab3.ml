@@ -69,8 +69,18 @@ match t with
  *
  * Do not reinsert (duplicate) existing elements *)
 let rec bst_insert (cmp : 'v cmp_fun) (t : 'v binary_tree) (x : 'v) : 'v binary_tree =
-  (* TODO, replace t *)
-  t
+(*
+*  match t with
+*  | Empty -> Node (Empty, x, Empty)
+*  | Node (l, value, r) -> 
+*    if cmp x value = true then
+*      Node (bst_insert cmp l x, value, r)
+*    else if cmp x value = false then
+*      Node (l, value, bst_insert cmp r x)
+*    else
+*      Node (l, value, r)
+*) t
+
 
 (* Search for element x in binary search tree t.
  *
