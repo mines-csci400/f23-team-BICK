@@ -40,16 +40,6 @@ let map_revorder (f : 'v -> 'a) (t : 'v binary_tree) : 'a list =
 
 (* Binary Search Trees *)
 
-(* Test if t is a binary search tree.
- *
- * That is, (recursively) are all elements to the left less the the
- * current element and all elements to the right greater than the
- * current element *)
-
-let is_bst (cmp : 'v cmp_fun) (t : 'v binary_tree)  : bool =
-  false
-
-
 (* Return the maximum element of a binary search tree. *)
 let rec bst_max (t : 'v binary_tree) : 'v option =
   match t with
@@ -64,6 +54,29 @@ match t with
   | Empty -> None
   | Node (Empty, value, _) -> Some value
   | Node (left, _, _) -> bst_min left
+
+
+(* Test if t is a binary search tree.
+ *
+ * That is, (recursively) are all elements to the left less the the
+ * current element and all elements to the right greater than the
+ * current element *)
+
+let rec is_bst (cmp : 'v cmp_fun) (t : 'v binary_tree)  : bool =
+   match t with
+  | Empty -> true
+  | Node (left, value, right) ->
+    let left_is_bst =
+      match bst_max left with
+      | Some max_left -> cmp max_left value <> Greater && is_bst cmp left
+      | None -> true
+    in
+    let right_is_bst =
+      match bst_min right with
+      | Some min_right -> cmp value min_right <> Greater && is_bst cmp right
+      | None -> true
+    in
+    left_is_bst && right_is_bst
 
 (* Insert element x into binary search tree t.
  *
@@ -247,7 +260,41 @@ let is_bst_tests_int =
                 3,
                 Empty)),
       Ok(true));
-     (* TODO *)
+      (Some("simple 2nd tree"),
+      Node(Empty,
+           9,
+           Node(l1,
+                30,
+                Empty)),
+      Ok(false));
+      (Some("simple 3rd tree"),
+      Node(Node(l2, 0, Empty),
+           0,
+           Node(Empty,
+                30,
+                l4)),
+      Ok(false));
+      (Some("simple 4th tree"),
+      Node(Empty,
+           3,
+           Node(l4,
+                5,
+                l2)),
+      Ok(false));
+      (Some("simple 5th tree"),
+      Node(Empty,
+           3,
+           Empty),
+      Ok(true));
+      (Some("simple 6th tree"),
+      Node(Node(Empty, 7, Empty),
+           0,
+           Node(l4,
+                0,
+                l2)),
+      Ok(false));
+      
+     
   ])
 
 let is_bst_str = is_bst str_cmp
@@ -265,7 +312,39 @@ let is_bst_tests_str =
                 "c",
                 Empty)),
       Ok(true));
-     (* TODO *)
+      (Some("simple 2nd tree"),
+      Node(Node(la, "x", lc),
+           "y",
+           Node(lb,
+                "c",
+                Empty)),
+      Ok(false));
+      (Some("simple 3rd tree"),
+      Node(Node(Empty, "d", ld),
+           "a",
+           Node(Empty,
+                "c",
+                Empty)),
+      Ok(false));
+      (Some("simple 4th tree"),
+      Node(Node(Empty, "a", la),
+           "a",
+           Node(Empty,
+                "a",
+                Empty)),
+      Ok(true));
+      (Some("simple 5th tree"),
+      Node(Node(ld, "c", la),
+           "b",
+           Node(Empty,
+                "b",
+                lb)),
+      Ok(false));
+      (Some("simple 6th tree"),
+      Node(Empty,
+           "a",
+           Empty),
+      Ok(true));
   ])
 
 
