@@ -282,7 +282,32 @@ let bst_max_tests =
            1,
            Node(l2, 3, Empty)),
       Ok(Some(3)));
-     (* TODO *)
+      (Some("simple 2nd tree"),
+      Node(Empty,
+           9,
+           Node(l1, 18, Empty)),
+      Ok(Some(18)));
+      (Some("simple 3rd tree"),
+      Node(Node(l4, 7, Empty),
+           12,
+           Empty),
+      Ok(Some(12)));
+      (Some("simple 4th tree"),
+      Node(Node(Empty, 7, l4),
+           1,
+           Node(l2, 1, Empty)),
+      Ok(Some(1)));
+      (Some("simple 5th tree"),
+      Node(Node(Empty, 1, Empty),
+           0,
+           Node(l2, 2, Empty)),
+      Ok(Some(2)));
+      (Some("simple 6th tree"),
+      Node(Node(Empty, 8, l5),
+           9,
+           Node(l2, 10, Empty)),
+      Ok(Some(10)));
+     
   ])
 
 
@@ -299,7 +324,31 @@ let bst_min_tests =
            1,
            Node(l2, 3, Empty)),
       Ok(Some(1)));
-     (* TODO *)
+     (Some("simple 2nd tree"),
+      Node(Empty,
+           1,
+           Node(l1, 6, Empty)),
+      Ok(Some(1)));
+      (Some("simple 3rd tree"),
+      Node(Empty,
+           1,
+           Node(l2, 1, l3)),
+      Ok(Some(1)));
+      (Some("simple 4th tree"),
+      Node(Empty,
+           4,
+           Node(l2, 3, Empty)),
+      Ok(Some(4)));
+      (Some("simple 5th tree"),
+      Node(Empty,
+           10,
+           Node(l5, 9, Empty)),
+      Ok(Some(10)));
+      (Some("simple 6th tree"),
+      Node(Node(l3, 3, Empty),
+           5,
+           Node(l2, 3, Empty)),
+      Ok(Some(3)));
   ])
 
 
