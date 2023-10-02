@@ -504,6 +504,15 @@ let bst_remove_min_tests =
      (Some("empty tree"),
       Empty,
       Ok (Empty, None));
+     (Some("empty subtree"),
+      Node(Empty, 1, l3),
+      Ok (l3, Some 1));
+     (Some("other empty subtree"),
+      Node(l3, 5, Empty),
+      Ok (l5, Some 3));
+     (Some("empty subtrees"),
+      Node(Empty, 1, Empty),
+      Ok (Empty, Some 1));
    ])
 
 
@@ -524,9 +533,12 @@ let bst_remove_tests_int =
      (Some("empty tree, element not found"),
       (Empty, 5),
       Ok (Empty, false));
-     (Some("empty subtree, element  found"),
+     (Some("empty subtree, element found"),
       (Node(Empty, 5, Empty), 5),
       Ok (Empty, true));
+     (Some("large element"),
+      (Node(Empty, 3, Node(l4,5,Node(Empty, 6, Empty))), 6),
+      Ok (Node(Empty, 3, Node(l4,5,Empty)), true));
    ])
 
 
@@ -540,5 +552,16 @@ let bst_remove_tests_str =
      (Some("simple tree"),
       (Node(la, "b", lc), "a"),
       Ok ((Node (Empty,"b",lc)), true));
-     (* TODO *)
+     (Some("simple tree, element not found"),
+      (Node(lc, "d", lf), "a"),
+      Ok ((Node (lc, "d",lf)), false));
+     (Some("empty tree, element not found"),
+      (Empty, "b"),
+      Ok (Empty, false));
+     (Some("empty subtree, element found"),
+      (Node(Empty, "a", Empty), "a"),
+      Ok (Empty, true));
+     (Some("large element"),
+      (Node(Empty, "c", Node(ld,"e",lf)), "f"),
+      Ok (Node(Empty, "c", Node(ld,"e",Empty)), true));
    ])
