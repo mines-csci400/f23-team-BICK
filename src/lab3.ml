@@ -78,29 +78,35 @@ let rec is_bst (cmp : 'v cmp_fun) (t : 'v binary_tree)  : bool =
     in
     left_is_bst && right_is_bst
 
+
 (* Insert element x into binary search tree t.
  *
  * Do not reinsert (duplicate) existing elements *)
 let rec bst_insert (cmp : 'v cmp_fun) (t : 'v binary_tree) (x : 'v) : 'v binary_tree =
-(*
-*  match t with
-*  | Empty -> Node (Empty, x, Empty)
-*  | Node (l, value, r) -> 
-*    if cmp x value = true then
-*      Node (bst_insert cmp l x, value, r)
-*    else if cmp x value = false then
-*      Node (l, value, bst_insert cmp r x)
-*    else
-*      Node (l, value, r)
-*) t
+  match t with
+  | Empty -> Node (Empty, x, Empty)
+  | Node (l, value, r) -> 
+    if cmp x value = Lesser then
+      Node (bst_insert cmp l x, value, r)
+    else if cmp x value = Greater then
+      Node (l, value, bst_insert cmp r x)
+    else
+      Node (l, value, r)
 
 
 (* Search for element x in binary search tree t.
  *
  * Return true if the tree contains x and false if it does not. *)
 let rec bst_search (cmp : 'v cmp_fun) (t : 'v binary_tree) (x : 'v) : bool =
-  (* TODO, replace false *)
-  false
+  match t with
+  | Empty -> false
+  | Node (l, value, r) -> 
+    if cmp x value = Equal then
+      true
+    else if cmp x value = Greater then
+      bst_search cmp r x
+    else
+     bst_search cmp l x
 
 (* Remove the minimum element of binary search tree t.
  *
