@@ -449,7 +449,34 @@ let bst_insert_tests_int =
       Ok (Node(Node(l0,1,Empty),
                2,
                l3)));
-       (* TODO *)
+     (Some("empty tree"),
+      (Empty,
+       1),
+      Ok (Node(Empty, 1, Empty)));
+     (Some("higher element"),
+      (Node(l3, 4, l5),
+       2),
+      Ok (Node(Node(l2,3,Empty),
+               4,
+               l5)));
+     (Some("lower element"),
+      (Node(l3, 4, l5),
+       0),
+      Ok (Node(Node(Node(Empty, 0, Empty),3,Empty),
+               4,
+               Node(Empty, 5, Empty))));
+     (Some("multiple nodes"),
+      (Node(Node(Empty, 2, Empty), 3, Node(Empty, 4, l5)),
+       0),
+      Ok (Node(Node(l0,2,Empty),
+               3,
+               Node(Empty, 4, l5))));
+     (Some("multiple nodes 2"),
+      (Node(Node(Empty, 0, Empty), 1, Node(Empty, 2, l3)),
+       5),
+      Ok (Node(Node(Empty,0,Empty),
+               1,
+               Node(Empty, 2, Node(Empty, 3, Node(Empty, 5, Empty))))));
   ])
 
 let bst_insert_tests_str =
@@ -464,7 +491,34 @@ let bst_insert_tests_str =
       Ok (Node(Node(la,"b",Empty),
                "c",
                ld)));
-     (* TODO *)
+     (Some("empty tree"),
+      (Empty,
+       "a"),
+      Ok (Node(Empty, "a", Empty)));
+     (Some("higher element"),
+      (Node(la, "b", lc),
+       "f"),
+      Ok (Node(Node(Empty,"a",Empty),
+               "b",
+               Node(Empty, "c", Node(Empty, "f", Empty)))));
+     (Some("lower element"),
+      (Node(ld, "e", lf),
+       "a"),
+      Ok (Node(Node(Node(Empty, "a", Empty),"d",Empty),
+               "e",
+               Node(Empty, "f", Empty))));
+     (Some("multiple nodes"),
+      (Node(Node(Empty, "b", Empty), "c", Node(Empty, "e", lf)),
+       "a"),
+      Ok (Node(Node(la,"b",Empty),
+               "c",
+               Node(Empty, "e", lf))));
+     (Some("multiple nodes 2"),
+      (Node(Node(Empty, "a", Empty), "b", Node(Empty, "c", le)),
+       "f"),
+      Ok (Node(Node(Empty,"a",Empty),
+               "b",
+               Node(Empty, "c", Node(Empty, "e", Node(Empty, "f", Empty))))));
    ])
 
 
