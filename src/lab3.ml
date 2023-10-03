@@ -532,7 +532,26 @@ let bst_search_tests_int =
       (Node(l1, 2, l3),
        2),
       Ok true);
-     (* TODO *)
+     (Some("false tree"),
+      (Node(l1, 2, l3),
+       9),
+      Ok false);
+     (Some("empty tree"),
+      (Empty,
+       0),
+      Ok false);
+     (Some("left search"),
+      (Node(Node(Empty,0,Empty), 2, Node(Empty,10,Empty)),
+       0),
+      Ok true);
+     (Some("right search"),
+      (Node(Node(Empty,0,Empty), 2, Node(Empty,10,Empty)),
+       10),
+      Ok true);
+     (Some("big tree"),
+      (Node(Node(l0,1,l2), 3, Node(l4,5,Node(Empty, 6, Empty))),
+       8),
+      Ok false);
    ]
   )
 
@@ -547,7 +566,26 @@ let bst_search_tests_str =
       (Node(la, "b", lc),
        "a"),
       Ok true);
-     (* TODO *)
+     (Some("false tree"),
+      (Node(la, "b", lc),
+       "d"),
+      Ok false);
+     (Some("empty tree"),
+      (Empty,
+       "a"),
+      Ok false);
+     (Some("left search"),
+      (Node(Node(Empty,"a",Empty), "b", Node(Empty,"c",Empty)),
+       "a"),
+      Ok true);
+     (Some("right search"),
+      (Node(Node(Empty,"a",Empty), "b", Node(Empty,"c",Empty)),
+       "c"),
+      Ok true);
+     (Some("big tree"),
+      (Node(Node(la,"b",lc), "d", Node(le,"f",Node(Empty, "g", Empty))),
+       "h"),
+      Ok false);
    ])
 
 let bst_remove_min_tests =
