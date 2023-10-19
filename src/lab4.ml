@@ -52,9 +52,13 @@ let rec rbt_search (cmp : 'v cmp_fun) (t : 'v rbtree) (x:'v) : bool =
 (* Balance constructor for a red-black tree *)
 let rbt_balance (c:color) (l : 'v rbtree) (v : 'v ) (r : 'v rbtree) : 'v rbtree =
   match (c,l,v,r) with
-  (* TODO, remove/modify the two cases below *)
-  | (Red,_,_,_) -> Rnode(l,v,r)
-  | (Black,_,_,_) -> Bnode(l,v,r)
+  | (Black, Rnode(Rnode(a, x, b), y, c), z, d)
+  | (Black, Rnode(a, x, Rnode(b, y, c)), z, d)
+  | (Black, a, x, Rnode(Rnode(b, y, c), z, d))
+  | (Black, a, x, Rnode(b, y, Rnode(c, z, d))) ->
+    Rnode(Bnode(a, x, b), y, Bnode(c, z, d))
+  | _ -> Bnode(l, v, r)
+  
 
 (* Insert element x into a red-black tree
  *
@@ -281,7 +285,31 @@ let rbt_balance_int_tests =
             3,
             Empty),
       Ok(Rnode(b1,2,b3)));
-     (* TODO *)
+     (Some("Case B"),
+      Rnode(Bnode(b1,5,Empty),
+            1,
+            Empty),
+      Ok(Bnode(Bnode(Bnode(Empty,1,Empty),5,Empty),1,Empty)));
+      (Some("Case C"),
+      Bnode(Bnode(Empty,5,Empty),
+            1,
+            b2),
+      Ok(Bnode(Bnode(Empty,5,Empty),1,Bnode(Empty,2,Empty))));
+      (Some("Case D"),
+      Rnode(Rnode(r30,23,Empty),
+            61,
+            b2),
+      Ok(Bnode(Rnode(Rnode(Empty,30,Empty),23,Empty),61,Bnode(Empty,2,Empty))));
+      (Some("Case E"),
+      Rnode(Bnode(Empty,1,Empty),
+            3,
+            r1),
+      Ok(Bnode(Bnode(Empty,1,Empty),3,Rnode(Empty,1,Empty))));
+      (Some("Case F"),
+      Bnode(Bnode(b2,0,b4),
+            3,
+            b1),
+      Ok(Bnode(Bnode(Bnode(Empty,2,Empty),0,Bnode(Empty,4,Empty)),3,Bnode(Empty,1,Empty))));
    ])
 
 let rbt_balance_str_tests =
@@ -294,8 +322,32 @@ let rbt_balance_str_tests =
       Bnode(Rnode(ra,"b",Empty),
             "c",
             Empty),
-      Ok(Rnode(ba,"b",bc)))
-       (* TODO *)
+      Ok(Rnode(ba,"b",bc))); 
+      (Some("Case B"),
+      Rnode(Bnode(ba,"c",bd),
+            "e",
+            Empty),
+      Ok(Bnode(Bnode(Bnode(Empty,"a",Empty),"c",Bnode(Empty,"d",Empty)),"e",Empty))); 
+      (Some("Case C"),
+      Bnode(Bnode(Empty,"z",Empty),
+            "x",
+            bd),
+      Ok(Bnode(Bnode(Empty,"z",Empty),"x",Bnode(Empty,"d",Empty)))); 
+      (Some("Case D"),
+      Rnode(Rnode(rc,"a",rb),
+            "d",
+            Empty),
+      Ok(Bnode(Rnode(Rnode(Empty,"c",Empty),"a",Rnode(Empty,"b",Empty)),"d",Empty))); 
+      (Some("Case E"),
+      Rnode(Rnode(Empty,"a",Empty),
+            "b",
+            Empty),
+      Ok(Bnode(Rnode(Empty,"a",Empty),"b",Empty)));
+      (Some("Case F"),
+      Bnode(Rnode(ba,"a",bb),
+            "b",
+            bc),
+      Ok(Bnode(Rnode(Bnode(Empty,"a",Empty),"a",Bnode(Empty,"b",Empty)),"b",Bnode(Empty,"c",Empty))));
    ])
 
 let rbt_insert_tester f =
