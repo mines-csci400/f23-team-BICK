@@ -61,15 +61,33 @@ let rec rbt_is_invariant (t : 'v rbtree) : bool =
 
 (* Test if red-black tree t is sorted. *)
 let rec rbt_is_sorted (cmp : 'v cmp_fun) (t : 'v rbtree) : bool =
-  (* TODO, remove false *)
-  false
+  let rec is_bst prev = function
+    | Empty -> true
+    | Rnode (left, value, right) | Bnode (left, value, right) ->
+        let left_sorted = is_bst prev left in
+        let prev_check = 
+          match prev with
+          | Some prev_val -> cmp prev_val value = Lesser
+          | None -> true
+        in
+        let right_sorted = is_bst (Some value) right in
+        left_sorted && prev_check && right_sorted
+  in
+  is_bst None t
 
 (* Search for element x in red-black tree t.
  *
  * Return true if the tree contains x and false if it does not. *)
 let rec rbt_search (cmp : 'v cmp_fun) (t : 'v rbtree) (x:'v) : bool =
-  (* TODO, remove false *)
-  false
+  let rec inorder_traversal = function
+    | Empty -> false
+    | Rnode (left, value, right) | Bnode (left, value, right) ->
+        let left_found = inorder_traversal left in
+        if cmp x value = Lesser then true
+        else if left_found then true
+        else inorder_traversal right
+  in
+  inorder_traversal t
 
 (* Balance constructor for a red-black tree *)
 let rbt_balance (c:color) (l : 'v rbtree) (v : 'v ) (r : 'v rbtree) : 'v rbtree =
@@ -204,11 +222,25 @@ let ra =  Rnode(Empty,"a",Empty)
 let rb =  Rnode(Empty,"b",Empty)
 let rc =  Rnode(Empty,"c",Empty)
 let rd =  Rnode(Empty,"d",Empty)
+let re =  Rnode(Empty,"e",Empty)
+let rf =  Rnode(Empty,"f",Empty)
+let rg =  Rnode(Empty,"g",Empty)
+let rh =  Rnode(Empty,"h",Empty)
+let ri =  Rnode(Empty,"i",Empty)
+let rj =  Rnode(Empty,"j",Empty)
+let rk =  Rnode(Empty,"k",Empty)
 
 let ba =  Bnode(Empty,"a",Empty)
 let bb =  Bnode(Empty,"b",Empty)
 let bc =  Bnode(Empty,"c",Empty)
 let bd =  Bnode(Empty,"d",Empty)
+let be =  Bnode(Empty,"e",Empty)
+let bf =  Bnode(Empty,"f",Empty)
+let bg =  Bnode(Empty,"g",Empty)
+let bh =  Bnode(Empty,"h",Empty)
+let bi =  Bnode(Empty,"i",Empty)
+let bj =  Bnode(Empty,"j",Empty)
+let bk =  Bnode(Empty,"k",Empty)
 
 let rbt_is_invariant_int_tests =
   ("rbt_is_invariant_int",
@@ -268,7 +300,21 @@ let rbt_is_sorted_int_tests =
      (Some("simple tree"),
       Bnode(r1, 2, r3),
       Ok(true));
-     (* TODO *)
+     (Some("empty tree"),
+      Bnode(Empty, 0, Empty),
+      Ok(true));
+     (Some("simple true"),
+      Bnode(r1, 8, r10),
+      Ok(true));
+     (Some("simple false"),
+      Bnode(r1, 10, r8),
+      Ok(false));
+     (Some("complex true"),
+      Bnode(Bnode(r1, 3, r5), 11, Bnode(r12, 13, Bnode(r14, 15, r16))),
+      Ok(true));
+     (Some("complex false"),
+      Bnode(Bnode(r1, 3, r5), 11, Bnode(Bnode(r14, 15, r16), 13, r12)),
+      Ok(false));
    ])
 
 
@@ -282,7 +328,21 @@ let rbt_is_sorted_str_tests =
      (Some("simple tree"),
       Bnode(ra, "b", rc),
       Ok(true));
-     (* TODO *)
+     (Some("empty tree"),
+      Bnode(Empty, "a", Empty),
+      Ok(true));
+     (Some("simple true"),
+      Bnode(rc, "e", rk),
+      Ok(true));
+     (Some("simple false"),
+      Bnode(rc, "k", re),
+      Ok(false));
+     (Some("complex true"),
+      Bnode(Bnode(ra, "b", rc), "d", Bnode(re, "f", Bnode(rg, "h", ri))),
+      Ok(true));
+     (Some("complex false"),
+      Bnode(Bnode(ra, "b", rc), "d", Bnode(Bnode(rg, "h", ri), "f", re)),
+      Ok(false));
    ])
 
 let rbt_search_int_tests =
@@ -294,7 +354,21 @@ let rbt_search_int_tests =
      (Some("simple tree"),
       (Bnode(r1, 2, r3), 2),
       Ok(true));
-     (* TODO *)
+     (Some("empty tree"),
+      (Bnode(Empty, 0, Empty), 2),
+      Ok(false));
+     (Some("simple true"),
+      (Bnode(r3, 7, r8), 8),
+      Ok(true));
+     (Some("simple false"),
+      (Bnode(r3, 7, r8), 6),
+      Ok(false));
+     (Some("complex true"),
+      (Bnode(Bnode(r1, 2, r3), 4, Bnode(Bnode(r5, 6, r7), 8, r9)), 6),
+      Ok(true));
+     (Some("complex false"),
+      (Bnode(Bnode(r1, 2, r3), 4, Bnode(Bnode(r5, 6, r7), 8, r9)), 10),
+      Ok(false));
    ])
 
 let rbt_search_str_tests =
@@ -306,7 +380,21 @@ let rbt_search_str_tests =
      (Some("simple tree"),
       (Bnode(ra, "b", rc), "b"),
       Ok(true));
-     (* TODO *)
+     (Some("empty tree"),
+      (Bnode(Empty, "a", Empty), "b"),
+      Ok(false));
+     (Some("simple true"),
+      (Bnode(rc, "d", rh), "d"),
+      Ok(true));
+     (Some("simple false"),
+      (Bnode(rc, "d", rh), "i"),
+      Ok(false));
+     (Some("complex true"),
+      (Bnode(Bnode(ra, "b", rc), "d", Bnode(Bnode(re, "f", rg), "h", ri)), "e"),
+      Ok(true));
+     (Some("complex false"),
+      (Bnode(Bnode(ra, "b", rc), "d", Bnode(Bnode(re, "f", rg), "h", ri)), "j"),
+      Ok(false));
    ])
 
 let rbt_balance_tester t =
