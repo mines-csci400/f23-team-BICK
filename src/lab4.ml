@@ -33,9 +33,31 @@ type 'v cmp_fun = 'v -> 'v -> cmp_result
  *  1. Does every red node have only black children?
  *  2. Does every path from root to leaf have the same number of black nodes?
  *)
-let rbt_is_invariant (t : 'v rbtree) : bool =
-  (* TODO, remove false *)
-  false
+let rec rbt_is_invariant (t : 'v rbtree) : bool =
+  let rec count_black_nodes_from_root_to_leaf node depth =
+    match node with
+    | Empty -> Some depth
+    | Bnode (left, _, right) ->
+      let left_count = count_black_nodes_from_root_to_leaf left (depth + 1) in
+      let right_count = count_black_nodes_from_root_to_leaf right (depth + 1) in
+      (match (left_count, right_count) with
+        | (Some l, Some r) when l = r -> Some l
+        | _ -> None)
+    | Rnode (left, _, right) -> 
+      let left_count = count_black_nodes_from_root_to_leaf left (depth) in
+      let right_count = count_black_nodes_from_root_to_leaf right (depth) in
+      (match (left_count, right_count) with
+        | (Some l, Some r) when l = r -> Some l
+        | _ -> None)
+  in
+
+  match t with
+  | Empty -> true
+  | Rnode (left, _, right) ->
+    rbt_color left = Black && rbt_color right = Black &&
+    (match count_black_nodes_from_root_to_leaf t 0 with Some _ -> true | None -> false)
+  | Bnode (left, _, right) ->
+    (match count_black_nodes_from_root_to_leaf t 0 with Some _ -> true | None -> false)
 
 (* Test if red-black tree t is sorted. *)
 let rec rbt_is_sorted (cmp : 'v cmp_fun) (t : 'v rbtree) : bool =
@@ -198,7 +220,18 @@ let rbt_is_invariant_int_tests =
      (Some("simple tree"),
       Bnode(r1, 2, r3),
       Ok(true));
-     (* TODO *)
+     (Some("red with black child tree"),
+      Bnode(Rnode(b2,3,r4), 5, r7),
+      Ok(false));
+      (Some("empty tree"),
+      Empty,
+      Ok(true));
+      (Some("unequal path tree"),
+      Bnode(b1, 2, Rnode(b3, 4, Bnode(b5,6,r8))),
+      Ok(false));
+      (Some("both child and path error tree"),
+      Bnode(b1, 2, Rnode(r3, 4, Bnode(b5,6,r8))),
+      Ok(false));
    ])
 
 let rbt_is_invariant_str_tests =
@@ -211,7 +244,18 @@ let rbt_is_invariant_str_tests =
      (Some("simple tree"),
       Bnode(ra, "b", rc),
       Ok(true));
-     (* TODO *)
+     (Some("red with black child tree"),
+      Bnode(Rnode(bb,"c",rd), "e", Empty),
+      Ok(false));
+      (Some("only root tree"),
+      ra,
+      Ok(true));
+      (Some("unequal path tree"),
+      Bnode(ba, "b", Rnode(bc, "d", Bnode(Bnode(Empty, "e", Empty),"f",Rnode(Empty, "g", Empty)))),
+      Ok(false));
+      (Some("both child and path error tree"),
+      Bnode(ba, "b", Rnode(rc, "d", Bnode(Bnode(Empty, "e", Empty),"f",Rnode(Empty, "g", Empty)))),
+      Ok(false));
    ])
 
 let rbt_is_sorted_int_tests =
