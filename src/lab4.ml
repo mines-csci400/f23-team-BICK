@@ -39,15 +39,33 @@ let rbt_is_invariant (t : 'v rbtree) : bool =
 
 (* Test if red-black tree t is sorted. *)
 let rec rbt_is_sorted (cmp : 'v cmp_fun) (t : 'v rbtree) : bool =
-  (* TODO, remove false *)
-  false
+  let rec is_bst prev = function
+    | Empty -> true
+    | Rnode (left, value, right) | Bnode (left, value, right) ->
+        let left_sorted = is_bst prev left in
+        let prev_check = 
+          match prev with
+          | Some prev_val -> cmp prev_val value = Lesser
+          | None -> true
+        in
+        let right_sorted = is_bst (Some value) right in
+        left_sorted && prev_check && right_sorted
+  in
+  is_bst None t
 
 (* Search for element x in red-black tree t.
  *
  * Return true if the tree contains x and false if it does not. *)
 let rec rbt_search (cmp : 'v cmp_fun) (t : 'v rbtree) (x:'v) : bool =
-  (* TODO, remove false *)
-  false
+  let rec inorder_traversal = function
+    | Empty -> false
+    | Rnode (left, value, right) | Bnode (left, value, right) ->
+        let left_found = inorder_traversal left in
+        if cmp x value = Lesser then true
+        else if left_found then true
+        else inorder_traversal right
+  in
+  inorder_traversal t
 
 (* Balance constructor for a red-black tree *)
 let rbt_balance (c:color) (l : 'v rbtree) (v : 'v ) (r : 'v rbtree) : 'v rbtree =
