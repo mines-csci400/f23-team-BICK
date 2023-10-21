@@ -310,7 +310,21 @@ let rbt_search_int_tests =
      (Some("simple tree"),
       (Bnode(r1, 2, r3), 2),
       Ok(true));
-     (* TODO *)
+     (Some("empty tree"),
+      (Bnode(Empty, 0, Empty), 2),
+      Ok(false));
+     (Some("simple true"),
+      (Bnode(r3, 7, r8), 8),
+      Ok(true));
+     (Some("simple false"),
+      (Bnode(r3, 7, r8), 6),
+      Ok(false));
+     (Some("complex true"),
+      (Bnode(Bnode(r1, 2, r3), 4, Bnode(Bnode(r5, 6, r7), 8, r9)), 6),
+      Ok(true));
+     (Some("complex false"),
+      (Bnode(Bnode(r1, 2, r3), 4, Bnode(Bnode(r5, 6, r7), 8, r9)), 10),
+      Ok(false));
    ])
 
 let rbt_search_str_tests =
@@ -322,7 +336,21 @@ let rbt_search_str_tests =
      (Some("simple tree"),
       (Bnode(ra, "b", rc), "b"),
       Ok(true));
-     (* TODO *)
+     (Some("empty tree"),
+      (Bnode(Empty, "a", Empty), "b"),
+      Ok(false));
+     (Some("simple true"),
+      (Bnode(rc, "d", rh), "d"),
+      Ok(true));
+     (Some("simple false"),
+      (Bnode(rc, "d", rh), "i"),
+      Ok(false));
+     (Some("complex true"),
+      (Bnode(Bnode(ra, "b", rc), "d", Bnode(Bnode(re, "f", rg), "h", ri)), "e"),
+      Ok(true));
+     (Some("complex false"),
+      (Bnode(Bnode(ra, "b", rc), "d", Bnode(Bnode(re, "f", rg), "h", ri)), "j"),
+      Ok(false));
    ])
 
 let rbt_balance_tester t =
