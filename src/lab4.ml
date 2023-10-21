@@ -200,11 +200,25 @@ let ra =  Rnode(Empty,"a",Empty)
 let rb =  Rnode(Empty,"b",Empty)
 let rc =  Rnode(Empty,"c",Empty)
 let rd =  Rnode(Empty,"d",Empty)
+let re =  Rnode(Empty,"e",Empty)
+let rf =  Rnode(Empty,"f",Empty)
+let rg =  Rnode(Empty,"g",Empty)
+let rh =  Rnode(Empty,"h",Empty)
+let ri =  Rnode(Empty,"i",Empty)
+let rj =  Rnode(Empty,"j",Empty)
+let rk =  Rnode(Empty,"k",Empty)
 
 let ba =  Bnode(Empty,"a",Empty)
 let bb =  Bnode(Empty,"b",Empty)
 let bc =  Bnode(Empty,"c",Empty)
 let bd =  Bnode(Empty,"d",Empty)
+let be =  Bnode(Empty,"e",Empty)
+let bf =  Bnode(Empty,"f",Empty)
+let bg =  Bnode(Empty,"g",Empty)
+let bh =  Bnode(Empty,"h",Empty)
+let bi =  Bnode(Empty,"i",Empty)
+let bj =  Bnode(Empty,"j",Empty)
+let bk =  Bnode(Empty,"k",Empty)
 
 let rbt_is_invariant_int_tests =
   ("rbt_is_invariant_int",
@@ -242,7 +256,21 @@ let rbt_is_sorted_int_tests =
      (Some("simple tree"),
       Bnode(r1, 2, r3),
       Ok(true));
-     (* TODO *)
+     (Some("empty tree"),
+      Bnode(Empty, 0, Empty),
+      Ok(true));
+     (Some("simple true"),
+      Bnode(r1, 8, r10),
+      Ok(true));
+     (Some("simple false"),
+      Bnode(r1, 10, r8),
+      Ok(false));
+     (Some("complex true"),
+      Bnode(Bnode(r1, 3, r5), 11, Bnode(r12, 13, Bnode(r14, 15, r16))),
+      Ok(true));
+     (Some("complex false"),
+      Bnode(Bnode(r1, 3, r5), 11, Bnode(Bnode(r14, 15, r16), 13, r12)),
+      Ok(false));
    ])
 
 
@@ -256,7 +284,21 @@ let rbt_is_sorted_str_tests =
      (Some("simple tree"),
       Bnode(ra, "b", rc),
       Ok(true));
-     (* TODO *)
+     (Some("empty tree"),
+      Bnode(Empty, "a", Empty),
+      Ok(true));
+     (Some("simple true"),
+      Bnode(rc, "e", rk),
+      Ok(true));
+     (Some("simple false"),
+      Bnode(rc, "k", re),
+      Ok(false));
+     (Some("complex true"),
+      Bnode(Bnode(ra, "b", rc), "d", Bnode(re, "f", Bnode(rg, "h", ri))),
+      Ok(true));
+     (Some("complex false"),
+      Bnode(Bnode(ra, "b", rc), "d", Bnode(Bnode(rg, "h", ri), "f", re)),
+      Ok(false));
    ])
 
 let rbt_search_int_tests =
