@@ -79,15 +79,24 @@ let rec rbt_is_sorted (cmp : 'v cmp_fun) (t : 'v rbtree) : bool =
  *
  * Return true if the tree contains x and false if it does not. *)
 let rec rbt_search (cmp : 'v cmp_fun) (t : 'v rbtree) (x:'v) : bool =
-  let rec inorder_traversal = function
+  match t with
     | Empty -> false
-    | Rnode (left, value, right) | Bnode (left, value, right) ->
-        let left_found = inorder_traversal left in
-        if cmp x value = Lesser then true
-        else if left_found then true
-        else inorder_traversal right
-  in
-  inorder_traversal t
+    | Rnode(l, v, r) ->
+      let comparison_result = cmp x v in
+      if comparison_result = Equal then
+        true
+      else if comparison_result = Lesser then
+        rbt_search cmp l x
+      else
+        rbt_search cmp r x
+    | Bnode(l, v, r) ->
+      let comparison_result = cmp x v in
+      if comparison_result = Equal then
+        true
+      else if comparison_result = Lesser then
+        rbt_search cmp l x
+      else
+        rbt_search cmp r x
 
 (* Balance constructor for a red-black tree *)
 let rbt_balance (c:color) (l : 'v rbtree) (v : 'v ) (r : 'v rbtree) : 'v rbtree =
@@ -103,9 +112,23 @@ let rbt_balance (c:color) (l : 'v rbtree) (v : 'v ) (r : 'v rbtree) : 'v rbtree 
 (* Insert element x into a red-black tree
  *
  * Do not reinsert (duplicate) existing elements *)
-let rbt_insert (cmp : 'v cmp_fun) (t : 'v rbtree) (x:'v) : 'v rbtree =
-  (* TODO, remove t *)
-  t
+let rec rbt_insert (cmp : 'v cmp_fun) (t : 'v rbtree) (x:'v) : 'v rbtree =
+  match t with
+  | Empty -> Rnode(Empty, x, Empty)
+  | Rnode(l, v, r) ->
+    if cmp x v = Equal then
+      t 
+    else if cmp x v = Lesser then
+      rbt_balance Red (rbt_insert cmp l x) v r
+    else
+      rbt_balance Red l v (rbt_insert cmp r x)
+  | Bnode(l, v, r) ->
+    if cmp x v = Equal then
+      t
+    else if cmp x v = Lesser then
+      rbt_balance Black (rbt_insert cmp l x) v r
+    else
+      rbt_balance Black l v (rbt_insert cmp r x)
 
 (***********)
 (** Tests **)
