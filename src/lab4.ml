@@ -387,10 +387,10 @@ let rbt_search_int_tests =
       (Bnode(r3, 7, r8), 6),
       Ok(false));
      (Some("complex true"),
-      (Bnode(Bnode(r1, 2, r3), 4, Bnode(Bnode(r5, 6, r7), 8, r9)), 6),
+      (Bnode(Bnode(r2, 5, r8), 11, Bnode(r12, 14, r18)), 5),
       Ok(true));
      (Some("complex false"),
-      (Bnode(Bnode(r1, 2, r3), 4, Bnode(Bnode(r5, 6, r7), 8, r9)), 10),
+      (Bnode(Bnode(r2, 5, r8), 11, Bnode(r12, 14, r18)), 10),
       Ok(false));
    ])
 
@@ -413,10 +413,10 @@ let rbt_search_str_tests =
       (Bnode(rc, "d", rh), "i"),
       Ok(false));
      (Some("complex true"),
-      (Bnode(Bnode(ra, "b", rc), "d", Bnode(Bnode(re, "f", rg), "h", ri)), "e"),
+      (Bnode(Bnode(ra, "b", rc), "d", Bnode(re, "f", rg)), "b"),
       Ok(true));
      (Some("complex false"),
-      (Bnode(Bnode(ra, "b", rc), "d", Bnode(Bnode(re, "f", rg), "h", ri)), "j"),
+      (Bnode(Bnode(ra, "b", rc), "d", Bnode(re, "f", rg)), "j"),
       Ok(false));
    ])
 
@@ -524,7 +524,12 @@ let rbt_insert_int_tests =
      (Some("simple tree"),
       (Bnode(r1, 2, Empty), 3),
       Ok(Bnode(r1, 2, r3)));
-     (* TODO *)
+     (Some("empty tree right"),
+      (Bnode(Empty, 2, Empty), 3),
+      Ok(Bnode(Empty, 2, r3)));
+     (Some("empty tree left"),
+      (Bnode(Empty, 2, Empty), 1),
+      Ok(Bnode(r1, 2, Empty)));
    ])
 
 let str_rbt_insert_tester = rbt_insert_tester str_cmp
@@ -539,5 +544,10 @@ let rbt_insert_str_tests =
      (Some("simple tree"),
       (Bnode(ra, "b", Empty), "c"),
       Ok(Bnode(ra, "b", rc)));
-     (* TODO *)
+     (Some("empty tree left"),
+      (Bnode(Empty, "b", Empty), "a"),
+      Ok(Bnode(ra, "b", Empty)));
+     (Some("empty tree right"),
+      (Bnode(Empty, "b", Empty), "c"),
+      Ok(Bnode(Empty, "b", rc)));
    ])
