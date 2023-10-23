@@ -530,6 +530,15 @@ let rbt_insert_int_tests =
      (Some("empty tree left"),
       (Bnode(Empty, 2, Empty), 1),
       Ok(Bnode(r1, 2, Empty)));
+     (Some("greater value insert"),
+      (Bnode(r10, 11, Empty), 12),
+      Ok(Bnode(r10, 11, r12)));
+     (Some("smaller value insert"),
+      (Bnode(Empty, 11, r12), 10),
+      Ok(Bnode(r10, 11, r12)));
+     (Some("complex tree"),
+      (Bnode(Bnode(r1, 2, r3), 4, Bnode(r5, 6, Empty)), 7),
+      Ok(Bnode(Bnode(r1, 2, r3), 4, Bnode(r5, 6, r7)))); 
    ])
 
 let str_rbt_insert_tester = rbt_insert_tester str_cmp
@@ -550,4 +559,13 @@ let rbt_insert_str_tests =
      (Some("empty tree right"),
       (Bnode(Empty, "b", Empty), "c"),
       Ok(Bnode(Empty, "b", rc)));
+     (Some("greater value insert"),
+      (Bnode(re, "f", Empty), "g"),
+      Ok(Bnode(re, "f", rg)));
+     (Some("smaller value insert"),
+      (Bnode(Empty, "f", rg), "e"),
+      Ok(Bnode(re, "f", rg)));
+     (Some("complex tree"),
+      (Bnode(Bnode(ra, "b", rc), "d", Bnode(re, "f", Empty)), "g"),
+      Ok(Bnode(Bnode(ra, "b", rc), "d", Bnode(re, "f", rg))));  
    ])
