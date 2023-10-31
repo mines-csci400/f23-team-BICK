@@ -86,10 +86,18 @@ rule token = parse
   (* - hexadecimal: e.g., 0x1, 0Xff, 0x10aAfF *)
   (* - floating point: e.g., 123., 123.456, .123 *)
   (* - scientific notation: e.g., 123e5, 123.E5, 123.456e-5, .123e100 *)
-  |  "0"
-  |  "1"
-  |  "2"
-  |  "42"
+  |  (digit1 digit*)
+  |  ('0' ['0'-'7']*)
+  |  ('0' ['b' 'B'] ['0' '1']*)
+  |  ('0' ['x' 'X']['0' - '9' 'a' - 'f' 'A'-'F']+)
+  |  (digit digit*)
+  |  (digit+ '.' digit*)
+  |  ('.' digit+)
+  |  (digit+ exponent)
+  |  (digit+ '.' exponent)
+  |  (digit '.' exponent '-' digit+)
+  |  ('.' digit+ exponent)
+  |  (digit digit* exponent)
    as x {NUMBER(js_float_of_string x )}
 
   (* End Numbers  *)
@@ -100,7 +108,6 @@ rule token = parse
     as x {(let _ = count_newlines x lexbuf in (); token lexbuf)}
 
   (* Identifiers *)
-  (* TODO: Fix the rule for identifiers *)
   | (['a' - 'z' 'A' - 'Z' '_' '$'] ['a' - 'z' 'A' - 'Z' '0' - '9' '_' '$']*)
      as x {IDENT(x)}
 
