@@ -38,7 +38,6 @@ rule token = parse
   | "const"     {CONST_KW}
   | "true"      {TRUE_KW}
   | "false"     {FALSE_KW} 
-  (* TODO: Add rules for true and false keywords *)
   | "Infinity"  {INFINITY_KW}
   | "NaN"       {NAN_KW}
   | "log"       {LOG_KW}
@@ -59,7 +58,6 @@ rule token = parse
   | "-"         {SUB_OP}
   | "/"         {DIV_OP}
   | "*"         {MUL_OP}
-  (* TODO: Add rules for +, -, /, and * operators*)
   | '='         {ASSIGN_OP}
   | '?'         {COND_OP}
   | ':'         {COLON_OP}
