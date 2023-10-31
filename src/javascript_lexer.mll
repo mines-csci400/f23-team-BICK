@@ -101,7 +101,7 @@ rule token = parse
 
   (* Identifiers *)
   (* TODO: Fix the rule for identifiers *)
-  | ("foo" | "bar")
+  | (['a' - 'z' 'A' - 'Z' '_' '$'] ['a' - 'z' 'A' - 'Z' '0' - '9' '_' '$']*)
      as x {IDENT(x)}
 
   (* End of File *)
