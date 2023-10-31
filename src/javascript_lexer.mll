@@ -36,6 +36,8 @@ rule token = parse
   | "return"    {RET_KW}
   | "let"       {LET_KW}
   | "const"     {CONST_KW}
+  | "true"      {TRUE_KW}
+  | "false"     {FALSE_KW} 
   (* TODO: Add rules for true and false keywords *)
   | "Infinity"  {INFINITY_KW}
   | "NaN"       {NAN_KW}
@@ -53,6 +55,10 @@ rule token = parse
   | ">="        {GEQ_OP}
   | '<'         {LT_OP}
   | "<="        {LEQ_OP}
+  | "+"         {ADD_OP}
+  | "-"         {SUB_OP}
+  | "/"         {DIV_OP}
+  | "*"         {MUL_OP}
   (* TODO: Add rules for +, -, /, and * operators*)
   | '='         {ASSIGN_OP}
   | '?'         {COND_OP}
