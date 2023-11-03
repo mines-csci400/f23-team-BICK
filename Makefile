@@ -9,7 +9,7 @@ LIBS = str.$(CMA) #unix.$(CMA)
 
 LABS =
 
-default: lab0 lab1 lab2 lab3 lab4
+default: all
 
 
 ###############
@@ -94,19 +94,16 @@ LABS += lab5
 ## Evaluator Labs ##
 ####################
 
-
-JAVASCRIPT_EVAL_O = $(JAVASCRIPT_O) $(addprefix build/,javascript_heap.$(CMO))
-
 build/javascript_heap.$(CMO): build/util.$(CMO) build/javascript_ast.$(CMO)
 
 # Template for evaluator-file labs
 define EVAL_TEMPLATE =
-build/lab$(1)_main.$(CMO): $(JAVASCRIPT_EVAL_O) build/lab$(1).$(CMO)
-build/lab$(1).$(CMO): $(JAVASCRIPT_EVAL_O)
+build/lab$(1)_main.$(CMO): $(JAVASCRIPT_O) $(addprefix build/,$(2)) build/lab$(1).$(CMO)
+build/lab$(1).$(CMO): $(JAVASCRIPT_O) $(addprefix build/,$(2))
 
 
 lab$(1): build/lab$(1)_main.$(CMO) build/lab$(1).$(CMO) $(JAVASCRIPT_EVAL_O)
-	$(OCAMLC) $(OCAML_FLAGS) -o lab$(1) $(LIBS) $(JAVASCRIPT_EVAL_O) build/lab$(1).$(CMO) build/lab$(1)_main.$(CMO)
+	$(OCAMLC) $(OCAML_FLAGS) -o lab$(1) $(LIBS) $(JAVASCRIPT_O) $(addprefix build/,$(2)) build/lab$(1).$(CMO) build/lab$(1)_main.$(CMO)
 
 lab$(1)_test: lab$(1)
 	./lab$(1) --test
@@ -116,8 +113,8 @@ LABS += lab$(1)
 endef
 
 $(eval $(call EVAL_TEMPLATE,6))
-$(eval $(call EVAL_TEMPLATE,7))
-$(eval $(call EVAL_TEMPLATE,8))
+# $(eval $(call EVAL_TEMPLATE,7))
+# $(eval $(call EVAL_TEMPLATE,8,javascript_heap.$(CMO)))
 
 
 # $(eval $(call EVAL_TEMPLATE,9))
