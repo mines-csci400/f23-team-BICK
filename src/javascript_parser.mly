@@ -111,8 +111,12 @@ expr:
   | expr DOT_OP IDENT { FieldExpr(get_current_pos (),$1,$3) }
   | LCB_KW field_list RCB_KW { ObjectExpr(get_current_pos (),$2) }
   | LP_KW expr RP_KW { $2 }
-  /* TODO: Add rules for arithmetic */
-  /* - Binary Operators: +,-,*,/ */
+  | expr ADD_OP expr { BopExpr(get_current_pos (), $1, PlusBop, $3) }
+  | expr SUB_OP expr { BopExpr(get_current_pos (), $1, MinusBop, $3) }
+  | expr MUL_OP expr { BopExpr(get_current_pos (), $1, TimesBop, $3) }
+  | expr DIV_OP expr { BopExpr(get_current_pos (), $1, DivBop, $3) }
+  | ADD_OP expr %prec LOG_NOT_OP { UopExpr(get_current_pos (), PosUop, $2) }
+  | SUB_OP expr %prec LOG_NOT_OP { UopExpr(get_current_pos (), NegUop, $2) }  /* - Binary Operators: +,-,*,/ */
   /* - Unary Operators: +,- */
 ;
 
