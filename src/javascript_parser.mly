@@ -56,6 +56,10 @@
 
 /* starting with lowest precedence: */
 /* TODO: fix associativity and precedence */
+%left ADD_OP
+%left SUB_OP
+%left MUL_OP
+%left DIV_OP
 %nonassoc COLON_OP
 %nonassoc COND_OP
 %left LOG_OR_OP
@@ -166,11 +170,10 @@ expr_list_rest:
   | expr_list_rest COMMA_OP expr {$3::$1}
 ;
 
-
-/* TODO: fix ident_list to allow more than one identifier */
 ident_list:
   | empty { [] }
   | IDENT { [$1] }
+  | ident_list IDENT { $2::$1 }
 ;
 
 ident_list_rest:
