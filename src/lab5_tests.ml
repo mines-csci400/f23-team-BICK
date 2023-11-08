@@ -63,6 +63,27 @@ let parser_tests =
                                        PlusBop,
                                        ValExpr(NoPos, NumVal(2.0)) ))));
 
+      (Some("simple subtraction"),
+        "10 - 3",
+        Ok(ExprProgram(NoPos, BopExpr( NoPos,
+                                       ValExpr(NoPos, NumVal(10.0)),
+                                       MinusBop,
+                                       ValExpr(NoPos, NumVal(3.0)) ))));
+       
+      (Some("simple multiplication"),
+        "3 * 4",
+        Ok(ExprProgram(NoPos, BopExpr( NoPos,
+                                       ValExpr(NoPos, NumVal(3.0)),
+                                       TimesBop,
+                                       ValExpr(NoPos, NumVal(4.0)) ))));
+
+      (Some("simple division"),
+        "15 / 5",
+        Ok(ExprProgram(NoPos, BopExpr( NoPos,
+                                       ValExpr(NoPos, NumVal(15.0)),
+                                       DivBop,
+                                       ValExpr(NoPos, NumVal(5.0)) ))));
+
       (Some("Identity lambda"),
         "function (x) {return x;}",
         Ok(ExprProgram(NoPos,
@@ -72,6 +93,15 @@ let parser_tests =
                                  ReturnBlock(NoPos, VarExpr(NoPos, "x")), (* block_t *)
                                  None (* typ_t option *)
                                 )))));
-       (* TODO *)
+
+      (Some("Function returning function"),
+        "function (x) {return x + 1;}",
+        Ok(ExprProgram(NoPos,
+                       FuncExpr(NoPos,
+                                (None, (* ident_t option *)
+                                 [("x", None)], (* typed_ident_t list *)
+                                 ReturnBlock(NoPos, BopExpr(NoPos, VarExpr(NoPos, "x"), PlusBop, ValExpr(NoPos, NumVal(1.0)))), (* block_t *)
+                                 None (* typ_t option *)
+                                )))));
 
   ])
