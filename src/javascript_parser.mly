@@ -55,11 +55,6 @@
 %token BLANKS         /* [ ]\r\n\t */
 
 /* starting with lowest precedence: */
-/* TODO: fix associativity and precedence */
-%left ADD_OP
-%left SUB_OP
-%left MUL_OP
-%left DIV_OP
 %nonassoc COLON_OP
 %nonassoc COND_OP
 %left LOG_OR_OP
@@ -69,6 +64,10 @@
 %nonassoc LOG_NOT_OP
 %left DOT_OP
 %nonassoc LP_KW
+%left DIV_OP
+%left MUL_OP
+%left SUB_OP
+%left ADD_OP
 /*(* ^^ highest precedence / tightest binding *)*/
 
 %start start /*(* the entry point *)*/
