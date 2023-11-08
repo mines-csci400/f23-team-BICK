@@ -105,11 +105,11 @@ let parser_tests =
                                 )))));
 
       (Some("String addition in function, multiple parameters"),
-        "function (x) { return (x + y);}",
+        "function (x, y) { return (x + y);}",
         Ok(ExprProgram(NoPos,
                        FuncExpr(NoPos,
                                 (None, (* ident_t option *)
-                                 [("x", None)], (* typed_ident_t list *)
+                                 [("x", None); ("y", None)], (* typed_ident_t list *)
                                  ReturnBlock(NoPos, BopExpr(NoPos, VarExpr(NoPos, "x"), PlusBop, VarExpr(NoPos, "y"))), (* block_t *)
                                  None (* typ_t option *)
                                 )))));
