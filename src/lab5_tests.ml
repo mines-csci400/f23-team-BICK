@@ -63,6 +63,13 @@ let parser_tests =
                                        PlusBop,
                                        ValExpr(NoPos, NumVal(2.0)) ))));
 
+      (Some("simple string expression"),
+        "a + b",
+        Ok(ExprProgram(NoPos, BopExpr( NoPos,
+                                       VarExpr(NoPos, "a"),
+                                       PlusBop,
+                                       VarExpr(NoPos, "b") ))));
+
       (Some("simple subtraction"),
         "10 - 3",
         Ok(ExprProgram(NoPos, BopExpr( NoPos,
@@ -104,7 +111,7 @@ let parser_tests =
                                  None (* typ_t option *)
                                 )))));
 
-      (Some("String addition in function, multiple parameters"),
+      (Some("Param addition in function, multiple parameters"),
         "function (x, y) { return (x + y);}",
         Ok(ExprProgram(NoPos,
                        FuncExpr(NoPos,
@@ -114,4 +121,33 @@ let parser_tests =
                                  None (* typ_t option *)
                                 )))));
 
+      (Some("Param addition and multiplication in function with ()"),
+        "function (x, y, z) { return (x + (y * z));}",
+        Ok(ExprProgram(NoPos,
+                       FuncExpr(NoPos,
+                                (None, (* ident_t option *)
+                                 [("x", None); ("y", None); ("z", None)], (* typed_ident_t list *)
+                                 ReturnBlock(NoPos, BopExpr(NoPos, VarExpr(NoPos, "x"), PlusBop, BopExpr(NoPos, VarExpr(NoPos, "y"), TimesBop, VarExpr(NoPos, "z")))), (* block_t *)
+                                 None (* typ_t option *)
+                                )))));
+
+      (Some("Multiple params in function, no (), test order of ops"),
+        "function (x, y, z) { return (x * y - z);}",
+        Ok(ExprProgram(NoPos,
+                       FuncExpr(NoPos,
+                                (None, (* ident_t option *)
+                                 [("x", None); ("y", None); ("z", None)], (* typed_ident_t list *)
+                                 ReturnBlock(NoPos, BopExpr(NoPos, BopExpr(NoPos, VarExpr(NoPos, "x"), TimesBop, VarExpr(NoPos, "y")), MinusBop, VarExpr(NoPos, "z"))), (* block_t *)
+                                 None (* typ_t option *)
+                                )))));
+
+      (Some("Function with multiple params returning param"),
+        "function (x, y, z) {return z;}",
+        Ok(ExprProgram(NoPos,
+                       FuncExpr(NoPos,
+                                (None, (* ident_t option *)
+                                 [("x", None); ("y", None); ("z", None)], (* typed_ident_t list *)
+                                 ReturnBlock(NoPos, VarExpr(NoPos, "z")), (* block_t *)
+                                 None (* typ_t option *)
+                                )))));
   ])

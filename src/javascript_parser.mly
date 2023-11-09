@@ -63,11 +63,11 @@
 %left LEQ_OP LT_OP GEQ_OP GT_OP
 %nonassoc LOG_NOT_OP
 %left DOT_OP
-%nonassoc LP_KW
+%left ADD_OP
+%left SUB_OP
 %left DIV_OP
 %left MUL_OP
-%left SUB_OP
-%left ADD_OP
+%nonassoc LP_KW
 /*(* ^^ highest precedence / tightest binding *)*/
 
 %start start /*(* the entry point *)*/
@@ -172,7 +172,7 @@ expr_list_rest:
 ident_list:
   | empty { [] }
   | IDENT { [$1] }
-  | ident_list IDENT { $2::$1 }
+  | IDENT ident_list_rest { $1::(List.rev $2) }
 ;
 
 ident_list_rest:
