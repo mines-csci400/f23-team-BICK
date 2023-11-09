@@ -50,7 +50,28 @@ and eval_expr (e:expr_t) : value_t =  match e with
   (* MinusBop provided as an example *)
   | BopExpr(_,e1,MinusBop,e2) ->
      NumVal(to_num (eval_expr e1) -. to_num (eval_expr e2))
-  (* TODO *)
+  | BopExpr(_,e1,PlusBop,e2) ->
+    NumVal(to_num (eval_expr e1) +. to_num (eval_expr e2))
+  | BopExpr(_,e1,TimesBop,e2) ->
+    NumVal(to_num (eval_expr e1) *. to_num (eval_expr e2))
+  | BopExpr(_,e1,DivBop,e2) ->
+    NumVal(to_num (eval_expr e1) /. to_num (eval_expr e2))
+  | BopExpr(_,e1,EqBop,e2) ->
+    BoolVal(to_str (eval_expr e1) = to_str (eval_expr e2))
+  | BopExpr(_,e1,NeqBop,e2) ->
+    BoolVal(to_str (eval_expr e1) != to_str (eval_expr e2))
+  | BopExpr(_,e1,GtBop,e2) ->
+    BoolVal(to_str (eval_expr e1) > to_str (eval_expr e2))
+  | BopExpr(_,e1,GteBop,e2) ->
+    BoolVal(to_str (eval_expr e1) >= to_str (eval_expr e2))
+  | BopExpr(_,e1,LtBop,e2) ->
+    BoolVal(to_str (eval_expr e1) < to_str (eval_expr e2))
+  | BopExpr(_,e1,LteBop,e2) ->
+    BoolVal(to_str (eval_expr e1) <= to_str (eval_expr e2))
+  | BopExpr(_,e1,AndBop,e2) ->
+    BoolVal(to_bool (eval_expr e1) && to_bool (eval_expr e2))
+  | BopExpr(_,e1,OrBop,e2) ->
+    BoolVal(to_bool (eval_expr e1) || to_bool (eval_expr e2))
   (* other expression types unimplemented *)
   | _ -> raise (UnimplementedExpr(e))
 
