@@ -48,12 +48,12 @@ let rec eval (p : program_t) : value_t = match p with
 and eval_expr (e:expr_t) : value_t =  match e with
   | ValExpr(p,v) -> v
 
-  (*unary operators*) (*
-  | UopExpr(_,e1,NegUop,e2) ->
-     NumVal(to_num (eval_expr e1) -. to_num (eval_expr e2))
-  | UopExpr(_,e1,NotUop,e2) ->
-     NumVal(to_num (eval_expr e1) !. to_num (eval_expr e2))
-  *)
+  (*unary operators*) 
+  | UopExpr(_,NegUop,e) ->
+     NumVal(-. to_num (eval_expr e))
+  | UopExpr(_,NotUop,e) ->
+     if(to_bool (eval_expr e)) then BoolVal(false)
+     else BoolVal(true)
 
   (* MinusBop provided as an example *)
   | BopExpr(_,e1,MinusBop,e2) ->
