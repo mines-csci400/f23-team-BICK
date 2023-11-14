@@ -152,5 +152,7 @@ let cond_eval_tests =
 let str_eval_tests =
   test_group "String Evaluation"
     [
-      (* TODO *)
+      (None, "\"aaaa\" <= \"aaaa\"",          Ok(BoolVal(true)));
+      (None, "\"aaaa\" >= \"bbbb\"",          Ok(BoolVal(false)));
+      (None, "\"hello\"-\"llo\"",   Ok(StrVal("he")));
     ]
