@@ -47,6 +47,14 @@ let rec eval (p : program_t) : value_t = match p with
 (* evaluate a value *)
 and eval_expr (e:expr_t) : value_t =  match e with
   | ValExpr(p,v) -> v
+
+  (*unary operators*) (*
+  | UopExpr(_,e1,NegUop,e2) ->
+     NumVal(to_num (eval_expr e1) -. to_num (eval_expr e2))
+  | UopExpr(_,e1,NotUop,e2) ->
+     NumVal(to_num (eval_expr e1) !. to_num (eval_expr e2))
+  *)
+
   (* MinusBop provided as an example *)
   | BopExpr(_,e1,MinusBop,e2) ->
      NumVal(to_num (eval_expr e1) -. to_num (eval_expr e2))
