@@ -141,7 +141,11 @@ let simple_str_eval_tests =
 let eval_tests =
   test_group "Evaluator"
     [
-      (* TODO *)
+      (None, "1+6+7", Ok(NumVal(14.0))); 
+      (None, "5*6/3", Ok(NumVal(10.0)));
+      (None, "(10-5)*2", Ok(NumVal(10.0)));
+      (None, "7*7*7*7 - 3", Ok(NumVal(2398.0)));
+      (None, "2.5 + 1.7 - .3", Ok(NumVal(3.9)));
     ]
 
 let cond_eval_tests =
