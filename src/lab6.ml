@@ -54,17 +54,23 @@ and eval_expr (e:expr_t) : value_t =  match e with
 
   (*unary operators*) 
   | UopExpr(_,NegUop,e) ->
-     NumVal(-. to_num (eval_expr e))
+     NumVal(-. (to_num (eval_expr e)))
   | UopExpr(_,NotUop,e) ->
      if(to_bool (eval_expr e)) then BoolVal(false)
      else BoolVal(true)
 
   (* MinusBop provided as an example *)
   (* Binary Operators *)
-  | BopExpr(_,e1,MinusBop,e2) ->
-     NumVal(to_num (eval_expr e1) -. to_num (eval_expr e2))
+  | BopExpr(_, e1, MinusBop, e2) ->
+    (match (eval_expr e1, eval_expr e2) with
+    | (NumVal(n1), NumVal(n2)) -> NumVal(n1 -. n2)
+    | (StrVal(s1), StrVal(s2)) -> StrVal(remove_substring s1 s2)
+    | _ -> UndefVal)
   | BopExpr(_,e1,PlusBop,e2) ->
-    NumVal(to_num (eval_expr e1) +. to_num (eval_expr e2))
+    (match (eval_expr e1, eval_expr e2) with
+    | (NumVal(n1), NumVal(n2)) -> NumVal(n1 +. n2)
+    | (StrVal(s1), StrVal(s2)) -> StrVal(s1 ^ " " ^ s2)
+    | _ -> UndefVal)
   | BopExpr(_,e1,TimesBop,e2) ->
     NumVal(to_num (eval_expr e1) *. to_num (eval_expr e2))
   | BopExpr(_,e1,DivBop,e2) ->
@@ -72,7 +78,7 @@ and eval_expr (e:expr_t) : value_t =  match e with
   | BopExpr(_,e1,EqBop,e2) ->
     BoolVal(to_str (eval_expr e1) = to_str (eval_expr e2))
   | BopExpr(_,e1,NeqBop,e2) ->
-    BoolVal(to_str (eval_expr e1) != to_str (eval_expr e2))
+    BoolVal(to_str (eval_expr e1) <> to_str (eval_expr e2))
   | BopExpr(_,e1,GtBop,e2) ->
     BoolVal(to_str (eval_expr e1) > to_str (eval_expr e2))
   | BopExpr(_,e1,GteBop,e2) ->
@@ -90,6 +96,18 @@ and eval_expr (e:expr_t) : value_t =  match e with
   (* other expression types unimplemented *)
   | _ -> raise (UnimplementedExpr(e))
 
+and remove_substring s1 s2 =
+  let len_s2 = String.length s2 in
+  let rec remove_anywhere s1 s2 =
+    if String.length s1 >= len_s2 then
+      let idx = try Some (String.index s1 s2.[0]) with Not_found -> None in
+      match idx with
+      | Some i -> remove_anywhere (String.sub s1 0 i ^ String.sub s1 (i + len_s2) (String.length s1 - (i + len_s2))) s2
+      | None -> s1
+    else
+      s1
+  in
+  remove_anywhere s1 s2
 
 (*********)
 (* Tests *)
@@ -111,7 +129,7 @@ let simple_expr_eval_tests =
       (None, "1 + 1",                       Ok(NumVal(2.0)));
       (None, "3 + (4 + 5)",                 Ok(NumVal(12.0)));
       (None, "3 * (4 + 5)",                 Ok(NumVal(27.0)));
-      (None, "-6 * 90 - 8",                 Ok(NumVal(-532.0)));
+      (None, "-6 * 90 - 8",                 Ok(NumVal(-548.0)));
       (None, "(-100) + 50",                   Ok(NumVal(-50.0)));
       (None, "true && (false || true)",     Ok(BoolVal(true)));
       (None, "true && (false || !true)",    Ok(BoolVal(false)));
@@ -166,4 +184,9 @@ let str_eval_tests =
       (None, "\"aaaa\" <= \"aaaa\"",          Ok(BoolVal(true)));
       (None, "\"aaaa\" >= \"bbbb\"",          Ok(BoolVal(false)));
       (None, "\"hello\"-\"llo\"",   Ok(StrVal("he")));
+      (None, "\"hello\"-\"he\"",   Ok(StrVal("llo")));
+      (None, "\"he\"-\"he\"",   Ok(StrVal("")));
+      (None, "\"help\"+\"me\"",   Ok(StrVal("help me")));
+      (None, "\"he\"===\"he\"",   Ok(BoolVal(true)));
+      (None, "\"h\"-\"e\"",   Ok(StrVal("h")));
     ]
