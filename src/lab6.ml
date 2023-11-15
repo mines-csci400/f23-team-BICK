@@ -78,8 +78,9 @@ and eval_expr (e:expr_t) : value_t =  match e with
     BoolVal(to_str (eval_expr e1) <= to_str (eval_expr e2))
   | BopExpr(_,e1,AndBop,e2) ->
     BoolVal(to_bool (eval_expr e1) && to_bool (eval_expr e2))
-  | BopExpr(_,e1,OrBop,e2) ->
-    BoolVal(to_bool (eval_expr e1) || to_bool (eval_expr e2))
+  | BopExpr(_, e1, OrBop, e2) ->
+    let v1 = eval_expr e1 in
+    if to_bool v1 then v1 else eval_expr e2
   (* other expression types unimplemented *)
   | _ -> raise (UnimplementedExpr(e))
 
