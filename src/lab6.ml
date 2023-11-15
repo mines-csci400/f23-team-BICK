@@ -54,7 +54,7 @@ and eval_expr (e:expr_t) : value_t =  match e with
 
   (*unary operators*) 
   | UopExpr(_,NegUop,e) ->
-     NumVal(-. (to_num (eval_expr e)))
+      NumVal(-. (to_num (eval_expr e)))
   | UopExpr(_,NotUop,e) ->
      if(to_bool (eval_expr e)) then BoolVal(false)
      else BoolVal(true)
@@ -130,7 +130,7 @@ let simple_expr_eval_tests =
       (None, "3 + (4 + 5)",                 Ok(NumVal(12.0)));
       (None, "3 * (4 + 5)",                 Ok(NumVal(27.0)));
       (None, "-6 * 90 - 8",                 Ok(NumVal(-548.0)));
-      (None, "(-100) + 50",                   Ok(NumVal(-50.0)));
+      (None, "-100 + 50",                   Ok(NumVal(-50.0)));
       (None, "true && (false || true)",     Ok(BoolVal(true)));
       (None, "true && (false || !true)",    Ok(BoolVal(false)));
       (None, "1 < 2",                       Ok(BoolVal(true)));

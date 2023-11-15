@@ -61,12 +61,12 @@
 %left LOG_AND_OP
 %left STREQ_OP NSTREQ_OP
 %left LEQ_OP LT_OP GEQ_OP GT_OP
-%nonassoc LOG_NOT_OP
 %left DOT_OP
 %left ADD_OP
 %left SUB_OP
 %left DIV_OP
 %left MUL_OP
+%nonassoc LOG_NOT_OP
 %nonassoc LP_KW
 /*(* ^^ highest precedence / tightest binding *)*/
 
@@ -99,7 +99,6 @@ expr:
   | value { ValExpr(get_current_pos (),$1) }
   | LCB_KW block RCB_KW { BlockExpr(get_current_pos (),$2) }
   | lambda { FuncExpr(get_current_pos (), $1) }
-  | LOG_NOT_OP expr { UopExpr(get_current_pos (),NotUop,$2) }
   | expr LEQ_OP expr { BopExpr(get_current_pos (),$1,LteBop,$3) }
   | expr LT_OP expr { BopExpr(get_current_pos (),$1,LtBop,$3) }
   | expr GEQ_OP expr { BopExpr(get_current_pos (),$1,GteBop,$3) }
@@ -120,6 +119,7 @@ expr:
   | expr DIV_OP expr { BopExpr(get_current_pos (), $1, DivBop, $3) }
   | ADD_OP expr %prec LOG_NOT_OP { UopExpr(get_current_pos (), PosUop, $2) }
   | SUB_OP expr %prec LOG_NOT_OP { UopExpr(get_current_pos (), NegUop, $2) }  /* - Binary Operators: +,-,*,/ */
+  | LOG_NOT_OP expr { UopExpr(get_current_pos (),NotUop,$2) }
   /* - Unary Operators: +,- */
 ;
 
