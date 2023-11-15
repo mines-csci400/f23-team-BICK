@@ -68,9 +68,11 @@ and eval_expr (e:expr_t) : value_t =  match e with
     | _ -> UndefVal)
   | BopExpr(_,e1,PlusBop,e2) ->
     (match (eval_expr e1, eval_expr e2) with
-    | (NumVal(n1), NumVal(n2)) -> NumVal(n1 +. n2)
-    | (StrVal(s1), StrVal(s2)) -> StrVal(s1 ^ " " ^ s2)
-    | _ -> UndefVal)
+      | (NumVal(n1), NumVal(n2)) -> NumVal(n1 +. n2)
+      | (StrVal(s1), StrVal(s2)) -> StrVal(s1 ^ " " ^ s2)
+      | (BoolVal(b), NumVal(n)) | (NumVal(n), BoolVal(b)) -> NumVal(if b then n +. 1.0 else n)
+      | (BoolVal(b1), BoolVal(b2)) -> NumVal(float_of_int(if b1 then 1 else 0) +. float_of_int(if b2 then 1 else 0))
+      | _ -> UndefVal)
   | BopExpr(_,e1,TimesBop,e2) ->
     NumVal(to_num (eval_expr e1) *. to_num (eval_expr e2))
   | BopExpr(_,e1,DivBop,e2) ->
@@ -92,6 +94,14 @@ and eval_expr (e:expr_t) : value_t =  match e with
   | BopExpr(_, e1, OrBop, e2) ->
     let v1 = eval_expr e1 in
     if to_bool v1 then v1 else eval_expr e2
+  | 
+  IfExpr(_, e1, e2, e3) ->
+    let cond_val = to_bool (eval_expr e1) in
+    if cond_val then
+      eval_expr e2
+    else
+      eval_expr e3
+
 
   (* other expression types unimplemented *)
   | _ -> raise (UnimplementedExpr(e))
@@ -175,7 +185,10 @@ let eval_tests =
 let cond_eval_tests =
   test_group "Conditional Evaluation"
     [
-      (* TODO *)
+      (None, "(2 > 3) ? 123 : 124", Ok(NumVal(124.0)));
+      (None, "(2 < 3) ? 123 : 124", Ok(NumVal(123.0)));
+      (None, "((1 + 2) > 2 ? 1 : 2)", Ok(NumVal(1.0)));
+      (None, "((1 + 2) < 2 ? 1 : 2)", Ok(NumVal(2.0)));
     ]
 
 let str_eval_tests =
