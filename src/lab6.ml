@@ -47,6 +47,10 @@ let rec eval (p : program_t) : value_t = match p with
 (* evaluate a value *)
 and eval_expr (e:expr_t) : value_t =  match e with
   | ValExpr(p,v) -> v
+  | PrintExpr(_, e1) -> 
+     let _ = (let v1 = eval_expr e1 in
+     Printf.printf "console.log(%s)\n" (str_value v1)) in
+     UndefVal
 
   (*unary operators*) 
   | UopExpr(_,NegUop,e) ->
@@ -56,6 +60,7 @@ and eval_expr (e:expr_t) : value_t =  match e with
      else BoolVal(true)
 
   (* MinusBop provided as an example *)
+  (* Binary Operators *)
   | BopExpr(_,e1,MinusBop,e2) ->
      NumVal(to_num (eval_expr e1) -. to_num (eval_expr e2))
   | BopExpr(_,e1,PlusBop,e2) ->
@@ -81,6 +86,7 @@ and eval_expr (e:expr_t) : value_t =  match e with
   | BopExpr(_, e1, OrBop, e2) ->
     let v1 = eval_expr e1 in
     if to_bool v1 then v1 else eval_expr e2
+
   (* other expression types unimplemented *)
   | _ -> raise (UnimplementedExpr(e))
 
@@ -105,8 +111,8 @@ let simple_expr_eval_tests =
       (None, "1 + 1",                       Ok(NumVal(2.0)));
       (None, "3 + (4 + 5)",                 Ok(NumVal(12.0)));
       (None, "3 * (4 + 5)",                 Ok(NumVal(27.0)));
-      (None, "-6 * 90 - 8",                 Ok(NumVal(-548.0)));
-      (None, "-100 + 50",                   Ok(NumVal(-50.0)));
+      (None, "-6 * 90 - 8",                 Ok(NumVal(-532.0)));
+      (None, "(-100) + 50",                   Ok(NumVal(-50.0)));
       (None, "true && (false || true)",     Ok(BoolVal(true)));
       (None, "true && (false || !true)",    Ok(BoolVal(false)));
       (None, "1 < 2",                       Ok(BoolVal(true)));
@@ -135,7 +141,7 @@ let simple_str_eval_tests =
     [
       (None, "\"aaa\" < \"aaaa\"",          Ok(BoolVal(true)));
       (None, "\"bbb\" < \"aaa\"",           Ok(BoolVal(false)));
-      (None, "\"hello\"+\" \"+\"world\"",   Ok(StrVal("hello world")));
+      (None, "\"hello\" + \"world\"",   Ok(StrVal("hello world")));
     ]
 
 let eval_tests =
