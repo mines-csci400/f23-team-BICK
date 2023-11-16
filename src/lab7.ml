@@ -39,15 +39,79 @@ and eval_stmt (env:environment_t) (s:stmt_t) : environment_t = match s with
   | _ -> raise (UnimplementedStmt(s))
 
 (* evaluate a value *)
-and eval_expr (env:environment_t) (e:expr_t) : value_t =
-  (*Printf.printf "%s %s\n" (str_expr e) (str_environment_simple env);*)
-  match e with
-  | BlockExpr(p,b) -> eval_block env b
-  | BopExpr(_,e1,MinusBop,e2) ->
-     NumVal(to_num (eval_expr env e1) -. to_num (eval_expr env e2))
-  (* TODO *)
+and eval_expr (env:environment_t) (e:expr_t) : value_t =  match e with
+  | ValExpr(p,v) -> v
+  | PrintExpr(_, e1) -> 
+     (let _ = (let v1 = eval_expr env e1 in
+     Printf.printf "console.log(%s)\n" (str_value v1)) in
+     UndefVal)
+
+  (*unary operators*) 
+  | UopExpr(_,NegUop,e) ->
+      NumVal(-. (to_num (eval_expr env e)))
+  | UopExpr(_,NotUop,e) ->
+     if(to_bool (eval_expr env e)) then BoolVal(false)
+     else BoolVal(true)
+
+  (* MinusBop provided as an example *)
+  (* Binary Operators *)
+  | BopExpr(_, e1, MinusBop, e2) ->
+    (match (eval_expr env e1, eval_expr env e2) with
+    | (NumVal(n1), NumVal(n2)) -> NumVal(n1 -. n2)
+    | (StrVal(s1), StrVal(s2)) -> StrVal(remove_substring s1 s2)
+    | _ -> UndefVal)
+  | BopExpr(_,e1,PlusBop,e2) ->
+    (match (eval_expr env e1, eval_expr env e2) with
+      | (NumVal(n1), NumVal(n2)) -> NumVal(n1 +. n2)
+      | (StrVal(s1), StrVal(s2)) -> StrVal(s1 ^ s2)
+      | (BoolVal(b), NumVal(n)) | (NumVal(n), BoolVal(b)) -> NumVal(if b then n +. 1.0 else n)
+      | (BoolVal(b1), BoolVal(b2)) -> NumVal(float_of_int(if b1 then 1 else 0) +. float_of_int(if b2 then 1 else 0))
+      | _ -> UndefVal)
+  | BopExpr(_,e1,TimesBop,e2) ->
+    NumVal(to_num (eval_expr env e1) *. to_num (eval_expr env e2))
+  | BopExpr(_,e1,DivBop,e2) ->
+    NumVal(to_num (eval_expr env e1) /. to_num (eval_expr env e2))
+  | BopExpr(_,e1,EqBop,e2) ->
+    BoolVal(to_str (eval_expr env e1) = to_str (eval_expr env e2))
+  | BopExpr(_,e1,NeqBop,e2) ->
+    BoolVal(to_str (eval_expr env e1) <> to_str (eval_expr env e2))
+  | BopExpr(_,e1,GtBop,e2) ->
+    BoolVal(to_str (eval_expr env e1) > to_str (eval_expr env e2))
+  | BopExpr(_,e1,GteBop,e2) ->
+    BoolVal(to_str (eval_expr env e1) >= to_str (eval_expr env e2))
+  | BopExpr(_,e1,LtBop,e2) ->
+    BoolVal(to_str (eval_expr env e1) < to_str (eval_expr env e2))
+  | BopExpr(_,e1,LteBop,e2) ->
+    BoolVal(to_str (eval_expr env e1) <= to_str (eval_expr env e2))
+  | BopExpr(_,e1,AndBop,e2) ->
+    BoolVal(to_bool (eval_expr env e1) && to_bool (eval_expr env e2))
+  | BopExpr(_, e1, OrBop, e2) ->
+    let v1 = eval_expr env e1 in
+    if to_bool v1 then v1 else eval_expr env e2
+  | 
+  IfExpr(_, e1, e2, e3) ->
+    let cond_val = to_bool (eval_expr env e1) in
+    if cond_val then
+      eval_expr env e2
+    else
+      eval_expr env e3
+
+
+  (* other expression types unimplemented *)
   | _ -> raise (UnimplementedExpr(e))
 
+and remove_substring s1 s2 =
+  let len_s2 = String.length s2 in
+  let rec remove_anywhere s1 s2 =
+    if String.length s1 >= len_s2 then
+      let idx = try Some (String.index s1 s2.[0]) with Not_found -> None in
+      match idx with
+      | Some i -> remove_anywhere (String.sub s1 0 i ^ String.sub s1 (i + len_s2) (String.length s1 - (i + len_s2))) s2
+      | None -> s1
+    else
+      s1
+  in
+  remove_anywhere s1 s2
 
 
 (*********)
