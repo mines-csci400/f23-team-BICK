@@ -31,17 +31,41 @@ let rec eval (env : environment_t) (p: program_t) : value_t = match p with
 (* evaluate a block *)
 and eval_block (env:environment_t) (p:block_t) : value_t = match p with
   | ReturnBlock(_,e) -> eval_expr env e
-  (* TODO *)
-  | _ -> raise (UnimplementedBlock(p))
+  | StmtBlock(_, stmt, rest) ->
+      let env' = eval_stmt env stmt in
+      eval_block env' rest
 
 (* evaluate a statement *)
 and eval_stmt (env:environment_t) (s:stmt_t) : environment_t = match s with
-  (* TODO *)
-  | _ -> raise (UnimplementedStmt(s))
+ | ConstStmt(_, v, e) ->
+      if StringMap.mem v env then
+        raise (ImmutableVar v)
+      else
+        let value = eval_expr env e in
+        bind_environment env v Immutable value
+
+  | LetStmt(_, v, e) ->
+      let value = eval_expr env e in
+      bind_environment env v Mutable value
+
+  | AssignStmt(_, e1, e2) ->
+      let value = eval_expr env e2 in
+      let var_name = match e1 with
+        | VarExpr(_, v) -> v
+        | _ -> raise (RefError e1) in
+      let access, _ = read_environment env var_name |> Option.get in
+      if access = Mutable then
+        bind_environment env var_name Mutable value
+      else
+        raise (ImmutableVar var_name)
 
 (* evaluate a value *)
 and eval_expr (env:environment_t) (e:expr_t) : value_t =  match e with
   | ValExpr(p,v) -> v
+  | VarExpr(_, v) ->
+      (match read_environment env v with
+      | Some (_, value) -> value
+      | None -> raise (UndeclaredVar v))
   | PrintExpr(_, e1) -> 
      (let _ = (let v1 = eval_expr env e1 in
      Printf.printf "console.log(%s)\n" (str_value v1)) in
@@ -96,7 +120,6 @@ and eval_expr (env:environment_t) (e:expr_t) : value_t =  match e with
       eval_expr env e2
     else
       eval_expr env e3
-
 
   (* other expression types unimplemented *)
   | _ -> raise (UnimplementedExpr(e))
