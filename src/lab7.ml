@@ -23,9 +23,10 @@ open Util
 
 (* evaluate a program *)
 let rec eval (env : environment_t) (p: program_t) : value_t = match p with
-  | ExprProgram(_,e) -> eval_expr env e
-  (* TODO *)
-  | _ -> raise (UnimplementedProgram(p))
+ | ExprProgram(_,e) -> eval_expr env e
+ | StmtProgram(_,s,p') ->
+    let new_env = eval_stmt env s in
+    eval new_env p'
 
 (* evaluate a block *)
 and eval_block (env:environment_t) (p:block_t) : value_t = match p with
