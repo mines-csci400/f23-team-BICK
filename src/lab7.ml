@@ -200,6 +200,8 @@ let simple_var_eval_tests =
 let var_eval_tests =
   test_group "Variable Evaluation"
     [
+      (None, "const x = 1; const y = 2; x",
+        Ok(NumVal(1.0)));
       (None, "const x = 2; const y = -3; x * y",
         Ok(NumVal(-6.0)));
       (None, "const x = 10; const y = 2; x / y",
@@ -266,7 +268,27 @@ let simple_func_eval_tests =
 let func_eval_tests =
   test_group "Function Definition Evaluation"
     [
-      (* TODO *)
+      (None, "const x = 123; function(y) {return x + y;}",
+       Ok(ClosureVal(StringMap.empty,(
+                Some("function including y"),
+                [("x",None)],
+                StmtBlock(NoPos,
+                          ConstStmt(NoPos,
+                                    "x",
+                                    ValExpr(NoPos,NumVal(123.0))),
+                          ReturnBlock(NoPos,VarExpr(NoPos,"x"))),
+                None))));
+      (None, "const x = 4; function(x) {return x + 5;}",
+       Ok(ClosureVal(StringMap.empty,(
+                Some("function adding to x"),
+                [("x",None)],
+                StmtBlock(NoPos,
+                          ConstStmt(NoPos,
+                                    "x",
+                                    ValExpr(NoPos,NumVal(4.0))),
+                          ReturnBlock(NoPos,
+                                    BopExpr(NoPos, VarExpr(NoPos,"x"), PlusBop, ValExpr(NoPos, NumVal(5.0))))),
+                None))));
     ]
 
 let simple_call_eval_tests =
