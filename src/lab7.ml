@@ -66,6 +66,14 @@ and eval_expr (env:environment_t) (e:expr_t) : value_t =  match e with
       (match read_environment env v with
       | Some (_, value) -> value
       | None -> raise (UndeclaredVar v))
+
+    FuncExpr(_, lambda) ->
+      let (maybe_name, params, body, maybe_return_type) = lambda in
+      let name = match maybe_name with
+        | Some(n) -> n
+        | None -> "" (* Handle anonymous functions *)
+      in
+      ClosureVal(env, Some(name), params, (maybe_return_type, body))
   | PrintExpr(_, e1) -> 
      (let _ = (let v1 = eval_expr env e1 in
      Printf.printf "console.log(%s)\n" (str_value v1)) in
@@ -114,12 +122,13 @@ and eval_expr (env:environment_t) (e:expr_t) : value_t =  match e with
     let v1 = eval_expr env e1 in
     if to_bool v1 then v1 else eval_expr env e2
   | 
-  IfExpr(_, e1, e2, e3) ->
-    let cond_val = to_bool (eval_expr env e1) in
-    if cond_val then
-      eval_expr env e2
-    else
-      eval_expr env e3
+    IfExpr(_, e1, e2, e3) ->
+      let cond_val = to_bool (eval_expr env e1) in
+      if cond_val then
+        eval_expr env e2
+      else
+        eval_expr env e3
+
 
   (* other expression types unimplemented *)
   | _ -> raise (UnimplementedExpr(e))
