@@ -67,13 +67,13 @@ and eval_expr (env:environment_t) (e:expr_t) : value_t =  match e with
       | Some (_, value) -> value
       | None -> raise (UndeclaredVar v))
 
-    FuncExpr(_, lambda) ->
-      let (maybe_name, params, body, maybe_return_type) = lambda in
-      let name = match maybe_name with
-        | Some(n) -> n
-        | None -> "" (* Handle anonymous functions *)
-      in
-      ClosureVal(env, Some(name), params, (maybe_return_type, body))
+  | FuncExpr(_, lambda) ->
+    let (maybe_name, params, body, maybe_return_type) = lambda in
+    let name = match maybe_name with
+      | Some(n) -> n
+      | None -> "" (* Handle anonymous functions *)
+    in
+    ClosureVal(env, lambda)
       
   | PrintExpr(_, e1) -> 
      (let _ = (let v1 = eval_expr env e1 in
