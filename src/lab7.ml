@@ -67,6 +67,7 @@ and eval_expr (env:environment_t) (e:expr_t) : value_t =  match e with
       | Some (_, value) -> value
       | None -> raise (UndeclaredVar v))
 
+(*
     FuncExpr(_, lambda) ->
       let (maybe_name, params, body, maybe_return_type) = lambda in
       let name = match maybe_name with
@@ -74,6 +75,7 @@ and eval_expr (env:environment_t) (e:expr_t) : value_t =  match e with
         | None -> "" (* Handle anonymous functions *)
       in
       ClosureVal(env, Some(name), params, (maybe_return_type, body))
+      *)
   | PrintExpr(_, e1) -> 
      (let _ = (let v1 = eval_expr env e1 in
      Printf.printf "console.log(%s)\n" (str_value v1)) in
@@ -198,7 +200,16 @@ let simple_var_eval_tests =
 let var_eval_tests =
   test_group "Variable Evaluation"
     [
-      (* TODO *)
+      (None, "const x = 2; const y = -3; x * y",
+        Ok(NumVal(-6.0)));
+      (None, "const x = 10; const y = 2; x / y",
+        Ok(NumVal(5.0)));
+      (None, "const x = 4; const y = 2; x / (x - y) + x * y",
+        Ok(NumVal(10.0)));
+      (None, "const x = 5; const y = 2; x * (x - y)", 
+        Ok(NumVal(15.0)));
+      (None, "const x = 2; y * 3", 
+        Error(UndeclaredVar("y")));
     ]
 
 
