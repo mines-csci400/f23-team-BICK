@@ -74,11 +74,25 @@ and eval_expr (env:environment_t) (e:expr_t) : value_t =  match e with
       | None -> "" (* Handle anonymous functions *)
     in
     ClosureVal(env, lambda)
-      
+
   | PrintExpr(_, e1) -> 
      (let _ = (let v1 = eval_expr env e1 in
      Printf.printf "console.log(%s)\n" (str_value v1)) in
      UndefVal)
+
+  | CallExpr(_, func_expr, arg_exprs) ->
+      let func_val = eval_expr env func_expr in
+      (match func_val with
+      | ClosureVal(closure_env, (maybe_name, params, body, maybe_return_type)) ->
+          (* Bind the function name to the closure value in the closure environment *)
+          let closure_env_with_name =
+            match maybe_name with
+            | Some name -> bind_environment closure_env name Immutable func_val
+            | None -> closure_env
+          in
+          let new_env = bind_params closure_env_with_name params arg_exprs in
+          eval_block new_env body
+      | _ -> raise ((UnimplementedExpr(e))))
 
   (*unary operators*) 
   | UopExpr(_,NegUop,e) ->
@@ -122,8 +136,7 @@ and eval_expr (env:environment_t) (e:expr_t) : value_t =  match e with
   | BopExpr(_, e1, OrBop, e2) ->
     let v1 = eval_expr env e1 in
     if to_bool v1 then v1 else eval_expr env e2
-  | 
-    IfExpr(_, e1, e2, e3) ->
+  | IfExpr(_, e1, e2, e3) ->
       let cond_val = to_bool (eval_expr env e1) in
       if cond_val then
         eval_expr env e2
@@ -147,6 +160,18 @@ and remove_substring s1 s2 =
   in
   remove_anywhere s1 s2
 
+and bind_params env params arg_exprs =
+  let rec bind_params_helper env params args =
+    match (params, args) with
+    | ([], []) -> env
+    | (param::rest_params, arg::rest_args) ->
+        let param_name = match param with
+          | (name, _) -> name in
+        let arg_val = eval_expr env arg in
+        let new_env = bind_environment env param_name Mutable arg_val in
+        bind_params_helper new_env rest_params rest_args
+  in
+  bind_params_helper env params arg_exprs
 
 (*********)
 (* Tests *)
