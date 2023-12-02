@@ -27,17 +27,15 @@ let rec eval (env : environment_t) (p: program_t) : value_t = match p with
  | StmtProgram(_,s,p') ->
     let new_env = eval_stmt env s in
     eval new_env p'
-
+    
 (* evaluate a block *)
 and eval_block (env:environment_t) (p:block_t) : value_t = match p with
   | ReturnBlock(_,e) -> eval_expr env e
-  | StmtBlock(_, stmt, rest) ->
-      let env' = eval_stmt env stmt in
-      eval_block env' rest
+  | StmtBlock(_,s,e) -> eval_block (eval_stmt env s) e
 
 (* evaluate a statement *)
 and eval_stmt (env:environment_t) (s:stmt_t) : environment_t = match s with
- | ConstStmt(_, v, e) ->
+| ConstStmt(_, v, e) ->
       if StringMap.mem v env then
         raise (ImmutableVar v)
       else
@@ -81,18 +79,15 @@ and eval_expr (env:environment_t) (e:expr_t) : value_t =  match e with
      UndefVal)
 
   | CallExpr(_, func_expr, arg_exprs) ->
-      let func_val = eval_expr env func_expr in
-      (match func_val with
-      | ClosureVal(closure_env, (maybe_name, params, body, maybe_return_type)) ->
-          (* Bind the function name to the closure value in the closure environment *)
-          let closure_env_with_name =
-            match maybe_name with
-            | Some name -> bind_environment closure_env name Immutable func_val
-            | None -> closure_env
-          in
-          let new_env = bind_params closure_env_with_name params arg_exprs in
-          eval_block new_env body
-      | _ -> raise ((UnimplementedExpr(e))))
+    (let call = eval_expr env func_expr in
+    match call with
+    | ClosureVal(call_env, (i, i_list, block, _)) -> 
+      let call_env = bind_func env call_env arg_exprs i_list func_expr in 
+      let call_env = (
+        match i with
+        | Some(i) -> bind_environment call_env i Mutable call
+        | _ -> call_env) in eval_block call_env block
+    | _ -> raise (InvalidCall(func_expr)))
 
   (*unary operators*) 
   | UopExpr(_,NegUop,e) ->
@@ -160,18 +155,11 @@ and remove_substring s1 s2 =
   in
   remove_anywhere s1 s2
 
-and bind_params env params arg_exprs =
-  let rec bind_params_helper env params args =
-    match (params, args) with
-    | ([], []) -> env
-    | (param::rest_params, arg::rest_args) ->
-        let param_name = match param with
-          | (name, _) -> name in
-        let arg_val = eval_expr env arg in
-        let new_env = bind_environment env param_name Mutable arg_val in
-        bind_params_helper new_env rest_params rest_args
-  in
-  bind_params_helper env params arg_exprs
+and bind_func (env: environment_t) (call_env: environment_t) (list_val: expr_t list) (list_name: typed_ident_t list) (func: expr_t) : environment_t =
+match (list_val, list_name) with 
+| (a::b, (c,_)::d) -> bind_func env (bind_environment call_env c Mutable (eval_expr env a)) b d func
+| ([], []) -> call_env
+| _ -> raise(InvalidCall(func))  
 
 (*********)
 (* Tests *)
