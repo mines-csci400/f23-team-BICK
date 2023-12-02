@@ -35,7 +35,7 @@ and eval_block (env:environment_t) (p:block_t) : value_t = match p with
 
 (* evaluate a statement *)
 and eval_stmt (env:environment_t) (s:stmt_t) : environment_t = match s with
-| ConstStmt(_, v, e) ->bind_environment env v Immutable (eval_expr env e)
+  | ConstStmt(_, v, e) ->bind_environment env v Immutable (eval_expr env e)
 
   | LetStmt(_, v, e) ->
       let value = eval_expr env e in
@@ -60,13 +60,7 @@ and eval_expr (env:environment_t) (e:expr_t) : value_t =  match e with
       | Some (_, value) -> value
       | None -> raise (UndeclaredVar v))
 
-  | FuncExpr(_, lambda) ->
-    let (maybe_name, params, body, maybe_return_type) = lambda in
-    let name = match maybe_name with
-      | Some(n) -> n
-      | None -> "" (* Handle anonymous functions *)
-    in
-    ClosureVal(env, lambda)
+  | FuncExpr(_, lambda) -> ClosureVal(env, lambda)
 
   | PrintExpr(_, e1) -> 
      (let _ = (let v1 = eval_expr env e1 in
@@ -151,11 +145,22 @@ and remove_substring s1 s2 =
   remove_anywhere s1 s2
 
 and bind_func (env: environment_t) (call_env: environment_t) (list_val: expr_t list) (list_name: typed_ident_t list) (func: expr_t) : environment_t =
+  let rec bind_func_params (env: environment_t) (params: typed_ident_t list) (args: expr_t list) : environment_t =
+    match (params, args) with
+    | (param :: restParams, arg :: restArgs) ->
+      let updatedEnv = bind_environment env (fst param) Mutable (eval_expr env arg) in
+      bind_func_params updatedEnv restParams restArgs
+    | ([], []) -> env
+    | _ -> raise (InvalidCall(func))
+  in
+
   match (list_val, list_name) with
-  | (a::b, (c, _)::d) -> bind_func env (bind_environment call_env c Mutable (eval_expr env a)) b d func
+  | (a :: b, (c, _) :: d) ->
+    let updatedEnv = bind_environment call_env c Mutable (eval_expr env a) in
+    let paramsBinding = bind_func_params updatedEnv d b in
+    bind_func paramsBinding updatedEnv b d func
   | ([], []) -> call_env
   | _ -> raise (InvalidCall(func))
-
 
 (*********)
 (* Tests *)
@@ -225,6 +230,10 @@ let var_eval_tests =
 
 let fact_js = "function factorial(n){return (n <= 1) ? 1 : (n * factorial(n-1));}"
 let fib_js = "function fib(x){return x<=0 ? 0 : (x===1 ? 1 : fib(x-1)+fib(x-2));}"
+let func1_js = "function mult_params(x,y) {return x+y;}"
+let func2_js = " function adds(y){const x = 123;return x+y;}"
+let func3_js = "function func(x) { return x(9); }"
+
 let scopes_js =
 "(function (x) {
     return function(f) {
@@ -277,25 +286,16 @@ let func_eval_tests =
   test_group "Function Definition Evaluation"
     [
       (None, "const x = 123; function(y) {return x + y;}",
-       Ok(ClosureVal(StringMap.empty,(
-                Some("function including y"),
-                [("x",None)],
-                StmtBlock(NoPos,
-                          ConstStmt(NoPos,
-                                    "x",
-                                    ValExpr(NoPos,NumVal(123.0))),
-                          ReturnBlock(NoPos,VarExpr(NoPos,"x"))),
+       Ok(ClosureVal((StringMap.add "x" (Immutable, NumVal(123.0)) StringMap.empty),(
+                None,
+                [("y",None)],
+                ReturnBlock(NoPos,BopExpr(NoPos,VarExpr(NoPos,"x"), PlusBop, VarExpr(NoPos, "y"))),
                 None))));
       (None, "const x = 4; function(x) {return x + 5;}",
-       Ok(ClosureVal(StringMap.empty,(
-                Some("function adding to x"),
+       Ok(ClosureVal((StringMap.add "x" (Immutable, NumVal(4.0)) StringMap.empty),(
+                None,
                 [("x",None)],
-                StmtBlock(NoPos,
-                          ConstStmt(NoPos,
-                                    "x",
-                                    ValExpr(NoPos,NumVal(4.0))),
-                          ReturnBlock(NoPos,
-                                    BopExpr(NoPos, VarExpr(NoPos,"x"), PlusBop, ValExpr(NoPos, NumVal(5.0))))),
+                ReturnBlock(NoPos,BopExpr(NoPos, VarExpr(NoPos,"x"), PlusBop, ValExpr(NoPos, NumVal(5.0)))),
                 None))));
     ]
 
@@ -314,6 +314,9 @@ let simple_call_eval_tests =
 let call_eval_tests =
   test_group "Call Evaluation"
     [
-      (* TODO *)
-      (Some("fib"), Printf.sprintf "(%s)(30)" fib_js, Ok(NumVal(832040.0)));
+      (Some("fib"), Printf.sprintf "(%s)(8)" fib_js, Ok(NumVal(21.0)));
+      (Some("factorial"), Printf.sprintf "(%s)(3)" fact_js, Ok(NumVal(6.0)));
+      (Some("func with multiple params"), Printf.sprintf "(%s)(4,7)" func1_js, Ok(NumVal(11.0)));
+      (Some("func with const value"), Printf.sprintf "(%s)(7)" func2_js, Ok(NumVal(130.0)));
+      (Some("function3 takes new func"), Printf.sprintf "(%s)(function(x){ return x+1; })" func3_js, Ok(NumVal(10.0)));
     ]
