@@ -27,7 +27,7 @@ let rec eval (env : environment_t) (p: program_t) : value_t = match p with
  | StmtProgram(_,s,p') ->
     let new_env = eval_stmt env s in
     eval new_env p'
-    
+
 (* evaluate a block *)
 and eval_block (env:environment_t) (p:block_t) : value_t = match p with
   | ReturnBlock(_,e) -> eval_expr env e
@@ -35,12 +35,7 @@ and eval_block (env:environment_t) (p:block_t) : value_t = match p with
 
 (* evaluate a statement *)
 and eval_stmt (env:environment_t) (s:stmt_t) : environment_t = match s with
-| ConstStmt(_, v, e) ->
-      if StringMap.mem v env then
-        raise (ImmutableVar v)
-      else
-        let value = eval_expr env e in
-        bind_environment env v Immutable value
+| ConstStmt(_, v, e) ->bind_environment env v Immutable (eval_expr env e)
 
   | LetStmt(_, v, e) ->
       let value = eval_expr env e in
@@ -156,10 +151,11 @@ and remove_substring s1 s2 =
   remove_anywhere s1 s2
 
 and bind_func (env: environment_t) (call_env: environment_t) (list_val: expr_t list) (list_name: typed_ident_t list) (func: expr_t) : environment_t =
-match (list_val, list_name) with 
-| (a::b, (c,_)::d) -> bind_func env (bind_environment call_env c Mutable (eval_expr env a)) b d func
-| ([], []) -> call_env
-| _ -> raise(InvalidCall(func))  
+  match (list_val, list_name) with
+  | (a::b, (c, _)::d) -> bind_func env (bind_environment call_env c Mutable (eval_expr env a)) b d func
+  | ([], []) -> call_env
+  | _ -> raise (InvalidCall(func))
+
 
 (*********)
 (* Tests *)
